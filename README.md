@@ -59,11 +59,14 @@ cd Offensive-AI-agent-
 
 ### 2. Install Dependencies
 ```bash
-# Core dependencies
-pip install -r requirements.txt
+# Complete setup with Llama 3.1 8B (recommended)
+python setup_and_test.py all
 
-# Setup Llama 3.1 8B (recommended)
-python setup_llama.py
+# Or setup core system only
+python setup_and_test.py setup
+
+# Or just install dependencies
+pip install -r requirements.txt
 ```
 
 ### 3. Configure Environment
@@ -180,12 +183,14 @@ test_cases = llama.generate_test_cases(target_info, scan_results)
 
 ### 1. Llama 3.1 8B (Recommended)
 ```bash
-# Automated setup
-python setup_llama.py
+# Complete setup including Llama
+python setup_and_test.py all
 
-# Manual configuration
-LLAMA_USE_QUANTIZATION=true  # Reduces memory usage
-LLAMA_TEMPERATURE=0.7        # Controls creativity
+# Llama-only setup
+python setup_and_test.py setup-llama
+
+# Test Llama integration
+python setup_and_test.py test-llama
 ```
 
 **Pros**: No API costs, privacy-focused, offline capable  
@@ -228,7 +233,7 @@ Offensive-AI-agent-/
 │   └── llama_integration.py   # Llama 3.1 8B integration
 ├── dashboard.py               # Streamlit web interface
 ├── main.py                    # CLI entry point
-├── setup_llama.py            # Llama setup automation
+├── setup_and_test.py         # Unified setup and test utility
 ├── requirements.txt          # Python dependencies
 ├── .env.example              # Environment template
 └── README.md                 # This file
@@ -237,14 +242,17 @@ Offensive-AI-agent-/
 ## 🧪 Testing
 
 ```bash
-# Test system components
-python test_system.py
+# Run comprehensive system test
+python setup_and_test.py test
 
-# Test Llama integration
-python test_llama.py
+# Test Llama integration only
+python setup_and_test.py test-llama
 
-# Test specific agents
-python -m pytest tests/
+# Check system requirements
+python setup_and_test.py check
+
+# Check security tools availability
+python setup_and_test.py tools
 ```
 
 ## 📈 Performance Benchmarks
