@@ -1,0 +1,70 @@
+{
+    "tools": {
+        "nmap": {
+            "path": "nmap",
+            "timeout": 300,
+            "default_args": [
+                "-sS",
+                "-O",
+                "-sV",
+                "--script=vuln"
+            ]
+        },
+        "masscan": {
+            "path": "masscan",
+            "timeout": 180,
+            "default_args": [
+                "--rate=1000"
+            ]
+        },
+        "rustscan": {
+            "path": "rustscan",
+            "timeout": 120,
+            "default_args": [
+                "--accessible"
+            ]
+        },
+        "theharvester": {
+            "path": "theHarvester",
+            "timeout": 300,
+            "sources": [
+                "google",
+                "bing",
+                "yahoo",
+                "duckduckgo",
+                "shodan"
+            ]
+        },
+        "amass": {
+            "path": "amass",
+            "timeout": 600,
+            "default_args": [
+                "enum",
+                "-passive"
+            ]
+        },
+        "shodan": {
+            "timeout": 60,
+            "max_results": 100
+        }
+    },
+    "scanning": {
+        "default_ports": "1-65535",
+        "common_ports": "21,22,23,25,53,80,110,111,135,139,143,443,993,995,1723,3306,3389,5432,5900,8080,8443",
+        "max_concurrent_scans": 10
+    },
+    "reporting": {
+        "formats": [
+            "json",
+            "html",
+            "pdf"
+        ],
+        "template_dir": "./templates",
+        "output_dir": "./reports/output"
+    },
+    "dashboard": {
+        "refresh_interval": 5,
+        "max_display_results": 1000,
+        "theme": "dark"
+    }
+}

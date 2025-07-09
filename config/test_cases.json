@@ -1,0 +1,301 @@
+{
+    "test_cases": [
+        {
+            "id": "TC001",
+            "name": "Default SSH Credentials",
+            "category": "Authentication",
+            "severity": "High",
+            "description": "Test for default SSH credentials",
+            "conditions": {
+                "ports": [
+                    22
+                ],
+                "services": [
+                    "ssh"
+                ]
+            },
+            "commands": [
+                "ssh -o ConnectTimeout=5 -o PasswordAuthentication=yes admin@{target}",
+                "ssh -o ConnectTimeout=5 -o PasswordAuthentication=yes root@{target}"
+            ],
+            "credentials": [
+                [
+                    "admin",
+                    "admin"
+                ],
+                [
+                    "root",
+                    "root"
+                ],
+                [
+                    "admin",
+                    "password"
+                ],
+                [
+                    "root",
+                    "toor"
+                ],
+                [
+                    "admin",
+                    ""
+                ],
+                [
+                    "root",
+                    ""
+                ]
+            ]
+        },
+        {
+            "id": "TC002",
+            "name": "HTTP Security Headers",
+            "category": "Web Security",
+            "severity": "Medium",
+            "description": "Check for missing security headers",
+            "conditions": {
+                "ports": [
+                    80,
+                    443,
+                    8080,
+                    8443
+                ],
+                "services": [
+                    "http",
+                    "https"
+                ]
+            },
+            "headers_to_check": [
+                "X-Frame-Options",
+                "X-XSS-Protection",
+                "X-Content-Type-Options",
+                "Strict-Transport-Security",
+                "Content-Security-Policy"
+            ]
+        },
+        {
+            "id": "TC003",
+            "name": "Directory Listing",
+            "category": "Information Disclosure",
+            "severity": "Medium",
+            "description": "Check for directory listing vulnerabilities",
+            "conditions": {
+                "ports": [
+                    80,
+                    443,
+                    8080,
+                    8443
+                ],
+                "services": [
+                    "http",
+                    "https"
+                ]
+            },
+            "directories": [
+                "/admin/",
+                "/backup/",
+                "/config/",
+                "/uploads/",
+                "/logs/",
+                "/temp/",
+                "/test/"
+            ]
+        },
+        {
+            "id": "TC004",
+            "name": "FTP Anonymous Access",
+            "category": "Authentication",
+            "severity": "High",
+            "description": "Test for anonymous FTP access",
+            "conditions": {
+                "ports": [
+                    21
+                ],
+                "services": [
+                    "ftp"
+                ]
+            },
+            "credentials": [
+                [
+                    "anonymous",
+                    "anonymous"
+                ],
+                [
+                    "ftp",
+                    "ftp"
+                ],
+                [
+                    "guest",
+                    "guest"
+                ]
+            ]
+        },
+        {
+            "id": "TC005",
+            "name": "SMB Null Session",
+            "category": "Authentication",
+            "severity": "High",
+            "description": "Test for SMB null session access",
+            "conditions": {
+                "ports": [
+                    139,
+                    445
+                ],
+                "services": [
+                    "smb",
+                    "netbios-ssn"
+                ]
+            }
+        },
+        {
+            "id": "TC006",
+            "name": "SQL Injection Basic",
+            "category": "Injection",
+            "severity": "Critical",
+            "description": "Basic SQL injection tests",
+            "conditions": {
+                "ports": [
+                    80,
+                    443,
+                    8080,
+                    8443
+                ],
+                "services": [
+                    "http",
+                    "https"
+                ]
+            },
+            "payloads": [
+                "' OR '1'='1",
+                "' OR 1=1--",
+                "admin'--",
+                "' UNION SELECT NULL--"
+            ]
+        },
+        {
+            "id": "TC007",
+            "name": "Default Web Credentials",
+            "category": "Authentication",
+            "severity": "High",
+            "description": "Test for default web application credentials",
+            "conditions": {
+                "ports": [
+                    80,
+                    443,
+                    8080,
+                    8443
+                ],
+                "services": [
+                    "http",
+                    "https"
+                ]
+            },
+            "paths": [
+                "/admin",
+                "/login",
+                "/admin.php",
+                "/administrator",
+                "/wp-admin"
+            ],
+            "credentials": [
+                [
+                    "admin",
+                    "admin"
+                ],
+                [
+                    "admin",
+                    "password"
+                ],
+                [
+                    "administrator",
+                    "administrator"
+                ],
+                [
+                    "root",
+                    "root"
+                ],
+                [
+                    "admin",
+                    ""
+                ],
+                [
+                    "guest",
+                    "guest"
+                ]
+            ]
+        },
+        {
+            "id": "TC008",
+            "name": "Open Database Ports",
+            "category": "Information Disclosure",
+            "severity": "High",
+            "description": "Check for exposed database services",
+            "conditions": {
+                "ports": [
+                    3306,
+                    5432,
+                    1433,
+                    27017,
+                    6379
+                ],
+                "services": [
+                    "mysql",
+                    "postgresql",
+                    "mssql",
+                    "mongodb",
+                    "redis"
+                ]
+            }
+        },
+        {
+            "id": "TC009",
+            "name": "SNMP Community Strings",
+            "category": "Authentication",
+            "severity": "Medium",
+            "description": "Test for default SNMP community strings",
+            "conditions": {
+                "ports": [
+                    161
+                ],
+                "services": [
+                    "snmp"
+                ]
+            },
+            "community_strings": [
+                "public",
+                "private",
+                "community",
+                "admin",
+                "read",
+                "write"
+            ]
+        },
+        {
+            "id": "TC010",
+            "name": "SSL/TLS Configuration",
+            "category": "Cryptography",
+            "severity": "Medium",
+            "description": "Check SSL/TLS configuration and vulnerabilities",
+            "conditions": {
+                "ports": [
+                    443,
+                    8443
+                ],
+                "services": [
+                    "https",
+                    "ssl"
+                ]
+            },
+            "checks": [
+                "weak_ciphers",
+                "ssl_version",
+                "certificate_validity",
+                "heartbleed",
+                "poodle"
+            ]
+        }
+    ],
+    "llm_prompts": {
+        "generate_test_cases": "Based on the following reconnaissance and scanning results, generate 5 specific penetration test cases following OWASP and CWE guidelines. Focus on the detected services and potential vulnerabilities:\n\nRecon Results: {recon_data}\nScan Results: {scan_data}\n\nFor each test case, provide:\n1. Test Case Name\n2. Category (OWASP Top 10 or CWE)\n3. Severity (Critical/High/Medium/Low)\n4. Description\n5. Specific commands or methodology\n6. Expected outcomes\n\nFormat the response as JSON.",
+        "vulnerability_analysis": "Analyze the following scan results and identify potential security vulnerabilities. Provide risk assessment and remediation recommendations:\n\nScan Data: {scan_data}\n\nProvide analysis in the following format:\n1. Identified Vulnerabilities\n2. Risk Level\n3. Potential Impact\n4. Remediation Steps",
+        "report_summary": "Generate a comprehensive executive summary based on the following security assessment results:\n\nRecon Results: {recon_data}\nScan Results: {scan_data}\nTest Results: {test_data}\n\nProvide:\n1. Executive Summary\n2. Key Findings\n3. Risk Matrix\n4. Recommendations\n5. Next Steps"
+    }
+}
