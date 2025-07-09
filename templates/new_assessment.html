@@ -1,715 +1,821 @@
-{% extends "base.html" %}
-
-{% block title %}New Assessment - Cybersecurity Automation System{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}New Assessment - Cybersecurity
+Automation System{% endblock %} {% block content %}
 <div class="row mb-4">
-    <div class="col-12">
-        <h1 class="h3 mb-0">
-            <i class="fas fa-plus-circle me-2"></i>
-            New Security Assessment
-        </h1>
-        <p class="text-muted">Configure and start a new cybersecurity assessment</p>
-    </div>
+	<div class="col-12">
+		<h1 class="h3 mb-0">
+			<i class="fas fa-plus-circle me-2"></i>
+			New Security Assessment
+		</h1>
+		<p class="text-muted">Configure and start a new cybersecurity assessment</p>
+	</div>
 </div>
 
 <div class="row">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-cog me-2"></i>
-                    Assessment Configuration
-                </h5>
-            </div>
-            <div class="card-body">
-                <form id="assessmentForm">
-                    <!-- Target Configuration -->
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fas fa-crosshairs me-2"></i>
-                            Target Configuration
-                        </h6>
-                        
-                        <div class="mb-3">
-                            <label for="target" class="form-label">Target *</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="target" name="target" required
-                                       placeholder="example.com, 192.168.1.1, or 192.168.1.0/24">
-                                <button class="btn btn-outline-secondary" type="button" id="validateTarget">
-                                    <i class="fas fa-check"></i> Validate
-                                </button>
-                            </div>
-                            <div class="form-text">Enter a domain name, IP address, or CIDR range</div>
-                            <div class="invalid-feedback" id="targetFeedback"></div>
-                            <div class="valid-feedback" id="targetSuccess"></div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="targetType" class="form-label">Target Type</label>
-                                <select class="form-select" id="targetType" name="target_type" disabled>
-                                    <option value="">Auto-detected</option>
-                                    <option value="domain">Domain</option>
-                                    <option value="ip">IP Address</option>
-                                    <option value="cidr">CIDR Range</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="scanType" class="form-label">Scan Type</label>
-                                <select class="form-select" id="scanType" name="scan_type">
-                                    <option value="quick">Quick Scan (Fast, Top 100 ports)</option>
-                                    <option value="comprehensive" selected>Comprehensive (Balanced coverage)</option>
-                                    <option value="stealth">Stealth Scan (Slower, evasive)</option>
-                                    <option value="aggressive">Aggressive (Fast, comprehensive)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+	<div class="col-lg-8">
+		<div class="card">
+			<div class="card-header">
+				<h5 class="mb-0">
+					<i class="fas fa-cog me-2"></i>
+					Assessment Configuration
+				</h5>
+			</div>
+			<div class="card-body">
+				<form id="assessmentForm">
+					<!-- Target Configuration -->
+					<div class="mb-4">
+						<h6 class="fw-bold mb-3">
+							<i class="fas fa-crosshairs me-2"></i>
+							Target Configuration
+						</h6>
 
-                    <!-- Scanning Configuration -->
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fas fa-search me-2"></i>
-                            Scanning Configuration
-                        </h6>
-                        
-                        <div class="mb-3">
-                            <label for="portSelection" class="form-label">Port Selection</label>
-                            <select class="form-select" id="portSelection" name="port_selection">
-                                <option value="top_100">Top 100 Ports (Fast)</option>
-                                <option value="top_1000" selected>Top 1000 Ports (Recommended)</option>
-                                <option value="common_web">Common Web Ports</option>
-                                <option value="common_db">Common Database Ports</option>
-                                <option value="all">All Ports (1-65535, Very Slow)</option>
-                                <option value="custom">Custom Port List</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3" id="customPortsDiv" style="display: none;">
-                            <label for="customPorts" class="form-label">Custom Ports</label>
-                            <input type="text" class="form-control" id="customPorts" name="custom_ports"
-                                   placeholder="80,443,8080-8090,3306">
-                            <div class="form-text">Comma-separated ports and ranges (e.g., 80,443,8080-8090)</div>
-                            <div class="invalid-feedback" id="portsFeedback"></div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="toolPreference" class="form-label">Scanning Tool</label>
-                                <select class="form-select" id="toolPreference" name="tool_preference">
-                                    <option value="nmap" selected>Nmap (Recommended)</option>
-                                    <option value="masscan">Masscan (Fast)</option>
-                                    <option value="rustscan">RustScan (Modern)</option>
-                                    <option value="auto">Auto-select</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check mt-4">
-                                    <input class="form-check-input" type="checkbox" id="enableRecon" name="enable_recon" checked>
-                                    <label class="form-check-label" for="enableRecon">
-                                        Enable Reconnaissance (Domain targets only)
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+						<div class="mb-3">
+							<label for="target" class="form-label">Target *</label>
+							<div class="input-group">
+								<input
+									type="text"
+									class="form-control"
+									id="target"
+									name="target"
+									required
+									placeholder="example.com, 192.168.1.1, or 192.168.1.0/24"
+								/>
+								<button
+									class="btn btn-outline-secondary"
+									type="button"
+									id="validateTarget"
+								>
+									<i class="fas fa-check"></i> Validate
+								</button>
+							</div>
+							<div class="form-text">
+								Enter a domain name, IP address, or CIDR range
+							</div>
+							<div class="invalid-feedback" id="targetFeedback"></div>
+							<div class="valid-feedback" id="targetSuccess"></div>
+						</div>
 
-                    <!-- Testing Configuration -->
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fas fa-flask me-2"></i>
-                            Security Testing Configuration
-                        </h6>
-                        
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="enablePredefinedTests" name="enable_predefined_tests" checked>
-                                <label class="form-check-label" for="enablePredefinedTests">
-                                    <strong>Run Predefined Security Tests</strong>
-                                </label>
-                            </div>
-                            <div class="form-text ms-4">Execute standard security test cases (port validation, SSL checks, etc.)</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="enableAITests" name="enable_ai_tests">
-                                <label class="form-check-label" for="enableAITests">
-                                    <strong>Generate AI-Powered Test Cases</strong>
-                                    <span class="badge bg-info ms-2">LLaMA</span>
-                                </label>
-                            </div>
-                            <div class="form-text ms-4">Use local LLaMA model to generate custom test cases based on findings</div>
-                        </div>
-                        
-                        <div class="mb-3" id="aiTestOptions" style="display: none;">
-                            <div class="ms-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="requireApproval" name="require_approval" checked>
-                                    <label class="form-check-label" for="requireApproval">
-                                        Require manual approval for AI-generated tests
-                                    </label>
-                                </div>
-                                <div class="form-text">Recommended for security - review AI tests before execution</div>
-                            </div>
-                        </div>
-                    </div>
+						<div class="row">
+							<div class="col-md-6">
+								<label for="targetType" class="form-label">Target Type</label>
+								<select
+									class="form-select"
+									id="targetType"
+									name="target_type"
+									disabled
+								>
+									<option value="">Auto-detected</option>
+									<option value="domain">Domain</option>
+									<option value="ip">IP Address</option>
+									<option value="cidr">CIDR Range</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<label for="scanType" class="form-label">Scan Type</label>
+								<select class="form-select" id="scanType" name="scan_type">
+									<option value="quick">
+										Quick Scan (Fast, Top 100 ports)
+									</option>
+									<option value="comprehensive" selected>
+										Comprehensive (Balanced coverage)
+									</option>
+									<option value="stealth">
+										Stealth Scan (Slower, evasive)
+									</option>
+									<option value="aggressive">
+										Aggressive (Fast, comprehensive)
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
 
-                    <!-- Report Configuration -->
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fas fa-file-alt me-2"></i>
-                            Report Configuration
-                        </h6>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="reportFormat" class="form-label">Report Format</label>
-                                <select class="form-select" id="reportFormat" name="report_format">
-                                    <option value="pdf" selected>PDF Report</option>
-                                    <option value="json">JSON Data</option>
-                                    <option value="csv">CSV Summary</option>
-                                    <option value="all">All Formats</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="reportLevel" class="form-label">Detail Level</label>
-                                <select class="form-select" id="reportLevel" name="report_level">
-                                    <option value="executive">Executive Summary</option>
-                                    <option value="technical" selected>Technical Report</option>
-                                    <option value="detailed">Detailed Analysis</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+					<!-- Scanning Configuration -->
+					<div class="mb-4">
+						<h6 class="fw-bold mb-3">
+							<i class="fas fa-search me-2"></i>
+							Scanning Configuration
+						</h6>
 
-                    <!-- Action Buttons -->
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <button type="button" class="btn btn-outline-secondary me-2" onclick="validateConfiguration()">
-                                <i class="fas fa-check-circle me-2"></i>
-                                Validate Config
-                            </button>
-                            <button type="button" class="btn btn-outline-info" onclick="saveAsTemplate()">
-                                <i class="fas fa-save me-2"></i>
-                                Save as Template
-                            </button>
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-outline-secondary me-2" onclick="resetForm()">
-                                <i class="fas fa-undo me-2"></i>
-                                Reset
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-play me-2"></i>
-                                Start Assessment
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+						<div class="mb-3">
+							<label for="portSelection" class="form-label"
+								>Port Selection</label
+							>
+							<select
+								class="form-select"
+								id="portSelection"
+								name="port_selection"
+							>
+								<option value="top_100">Top 100 Ports (Fast)</option>
+								<option value="top_1000" selected>
+									Top 1000 Ports (Recommended)
+								</option>
+								<option value="common_web">Common Web Ports</option>
+								<option value="common_db">Common Database Ports</option>
+								<option value="all">All Ports (1-65535, Very Slow)</option>
+								<option value="custom">Custom Port List</option>
+							</select>
+						</div>
 
-    <div class="col-lg-4">
-        <!-- Configuration Preview -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-eye me-2"></i>
-                    Configuration Preview
-                </h5>
-            </div>
-            <div class="card-body">
-                <div id="configPreview">
-                    <div class="text-muted text-center py-3">
-                        <i class="fas fa-info-circle fa-2x mb-2"></i>
-                        <p>Enter target to see configuration preview</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+						<div class="mb-3" id="customPortsDiv" style="display: none">
+							<label for="customPorts" class="form-label">Custom Ports</label>
+							<input
+								type="text"
+								class="form-control"
+								id="customPorts"
+								name="custom_ports"
+								placeholder="80,443,8080-8090,3306"
+							/>
+							<div class="form-text">
+								Comma-separated ports and ranges (e.g., 80,443,8080-8090)
+							</div>
+							<div class="invalid-feedback" id="portsFeedback"></div>
+						</div>
 
-        <!-- Tool Status -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-tools me-2"></i>
-                    Tool Availability
-                </h5>
-            </div>
-            <div class="card-body">
-                <div id="toolStatus" class="text-center">
-                    <div class="loading-spinner"></div>
-                    <p class="mt-2">Checking tool availability...</p>
-                </div>
-            </div>
-        </div>
+						<div class="row">
+							<div class="col-md-6">
+								<label for="toolPreference" class="form-label"
+									>Scanning Tool</label
+								>
+								<select
+									class="form-select"
+									id="toolPreference"
+									name="tool_preference"
+								>
+									<option value="nmap" selected>Nmap (Recommended)</option>
+									<option value="masscan">Masscan (Fast)</option>
+									<option value="rustscan">RustScan (Modern)</option>
+									<option value="auto">Auto-select</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<div class="form-check mt-4">
+									<input
+										class="form-check-input"
+										type="checkbox"
+										id="enableRecon"
+										name="enable_recon"
+										checked
+									/>
+									<label class="form-check-label" for="enableRecon">
+										Enable Reconnaissance (Domain targets only)
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
 
-        <!-- Assessment Templates -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-clipboard-list me-2"></i>
-                    Quick Templates
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-primary btn-sm" onclick="loadTemplate('quick_web')">
-                        <i class="fas fa-globe me-2"></i>
-                        Quick Web Scan
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm" onclick="loadTemplate('comprehensive_network')">
-                        <i class="fas fa-network-wired me-2"></i>
-                        Network Assessment
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm" onclick="loadTemplate('stealth_recon')">
-                        <i class="fas fa-user-secret me-2"></i>
-                        Stealth Reconnaissance
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm" onclick="loadTemplate('ai_powered')">
-                        <i class="fas fa-robot me-2"></i>
-                        AI-Powered Assessment
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+					<!-- Testing Configuration -->
+					<div class="mb-4">
+						<h6 class="fw-bold mb-3">
+							<i class="fas fa-flask me-2"></i>
+							Security Testing Configuration
+						</h6>
+
+						<div class="mb-3">
+							<div class="form-check">
+								<input
+									class="form-check-input"
+									type="checkbox"
+									id="enablePredefinedTests"
+									name="enable_predefined_tests"
+									checked
+								/>
+								<label class="form-check-label" for="enablePredefinedTests">
+									<strong>Run Predefined Security Tests</strong>
+								</label>
+							</div>
+							<div class="form-text ms-4">
+								Execute standard security test cases (port validation, SSL
+								checks, etc.)
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<div class="form-check">
+								<input
+									class="form-check-input"
+									type="checkbox"
+									id="enableAITests"
+									name="enable_ai_tests"
+								/>
+								<label class="form-check-label" for="enableAITests">
+									<strong>Generate AI-Powered Test Cases</strong>
+									<span class="badge bg-info ms-2">LLaMA</span>
+								</label>
+							</div>
+							<div class="form-text ms-4">
+								Use local LLaMA model to generate custom test cases based on
+								findings
+							</div>
+						</div>
+
+						<div class="mb-3" id="aiTestOptions" style="display: none">
+							<div class="ms-4">
+								<div class="form-check">
+									<input
+										class="form-check-input"
+										type="checkbox"
+										id="requireApproval"
+										name="require_approval"
+										checked
+									/>
+									<label class="form-check-label" for="requireApproval">
+										Require manual approval for AI-generated tests
+									</label>
+								</div>
+								<div class="form-text">
+									Recommended for security - review AI tests before execution
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Report Configuration -->
+					<div class="mb-4">
+						<h6 class="fw-bold mb-3">
+							<i class="fas fa-file-alt me-2"></i>
+							Report Configuration
+						</h6>
+
+						<div class="row">
+							<div class="col-md-6">
+								<label for="reportFormat" class="form-label"
+									>Report Format</label
+								>
+								<select
+									class="form-select"
+									id="reportFormat"
+									name="report_format"
+								>
+									<option value="pdf" selected>PDF Report</option>
+									<option value="json">JSON Data</option>
+									<option value="csv">CSV Summary</option>
+									<option value="all">All Formats</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<label for="reportLevel" class="form-label">Detail Level</label>
+								<select
+									class="form-select"
+									id="reportLevel"
+									name="report_level"
+								>
+									<option value="executive">Executive Summary</option>
+									<option value="technical" selected>Technical Report</option>
+									<option value="detailed">Detailed Analysis</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- Action Buttons -->
+					<div class="d-flex justify-content-between">
+						<div>
+							<button
+								type="button"
+								class="btn btn-outline-secondary me-2"
+								onclick="validateConfiguration()"
+							>
+								<i class="fas fa-check-circle me-2"></i>
+								Validate Config
+							</button>
+							<button
+								type="button"
+								class="btn btn-outline-info"
+								onclick="saveAsTemplate()"
+							>
+								<i class="fas fa-save me-2"></i>
+								Save as Template
+							</button>
+						</div>
+						<div>
+							<button
+								type="button"
+								class="btn btn-outline-secondary me-2"
+								onclick="resetForm()"
+							>
+								<i class="fas fa-undo me-2"></i>
+								Reset
+							</button>
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-play me-2"></i>
+								Start Assessment
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-4">
+		<!-- Configuration Preview -->
+		<div class="card mb-4">
+			<div class="card-header">
+				<h5 class="mb-0">
+					<i class="fas fa-eye me-2"></i>
+					Configuration Preview
+				</h5>
+			</div>
+			<div class="card-body">
+				<div id="configPreview">
+					<div class="text-muted text-center py-3">
+						<i class="fas fa-info-circle fa-2x mb-2"></i>
+						<p>Enter target to see configuration preview</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Tool Status -->
+		<div class="card mb-4">
+			<div class="card-header">
+				<h5 class="mb-0">
+					<i class="fas fa-tools me-2"></i>
+					Tool Availability
+				</h5>
+			</div>
+			<div class="card-body">
+				<div id="toolStatus" class="text-center">
+					<div class="loading-spinner"></div>
+					<p class="mt-2">Checking tool availability...</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Assessment Templates -->
+		<div class="card">
+			<div class="card-header">
+				<h5 class="mb-0">
+					<i class="fas fa-clipboard-list me-2"></i>
+					Quick Templates
+				</h5>
+			</div>
+			<div class="card-body">
+				<div class="d-grid gap-2">
+					<button
+						class="btn btn-outline-primary btn-sm"
+						onclick="loadTemplate('quick_web')"
+					>
+						<i class="fas fa-globe me-2"></i>
+						Quick Web Scan
+					</button>
+					<button
+						class="btn btn-outline-primary btn-sm"
+						onclick="loadTemplate('comprehensive_network')"
+					>
+						<i class="fas fa-network-wired me-2"></i>
+						Network Assessment
+					</button>
+					<button
+						class="btn btn-outline-primary btn-sm"
+						onclick="loadTemplate('stealth_recon')"
+					>
+						<i class="fas fa-user-secret me-2"></i>
+						Stealth Reconnaissance
+					</button>
+					<button
+						class="btn btn-outline-primary btn-sm"
+						onclick="loadTemplate('ai_powered')"
+					>
+						<i class="fas fa-robot me-2"></i>
+						AI-Powered Assessment
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
-// Form validation and interaction
-document.getElementById('target').addEventListener('input', function() {
-    const target = this.value.trim();
-    const targetType = document.getElementById('targetType');
-    const enableRecon = document.getElementById('enableRecon');
-    
-    if (target) {
-        // Auto-detect target type
-        if (isValidDomain(target)) {
-            targetType.value = 'domain';
-            enableRecon.disabled = false;
-        } else if (isValidIP(target)) {
-            targetType.value = 'ip';
-            enableRecon.disabled = true;
-            enableRecon.checked = false;
-        } else if (isValidCIDR(target)) {
-            targetType.value = 'cidr';
-            enableRecon.disabled = true;
-            enableRecon.checked = false;
-        } else {
-            targetType.value = '';
-        }
-        
-        updateConfigPreview();
-        validateTarget();
-    } else {
-        targetType.value = '';
-        enableRecon.disabled = false;
-    }
-});
+	// Form validation and interaction
+	document.getElementById('target').addEventListener('input', function() {
+	    const target = this.value.trim();
+	    const targetType = document.getElementById('targetType');
+	    const enableRecon = document.getElementById('enableRecon');
 
-document.getElementById('portSelection').addEventListener('change', function() {
-    const customPortsDiv = document.getElementById('customPortsDiv');
-    if (this.value === 'custom') {
-        customPortsDiv.style.display = 'block';
-        document.getElementById('customPorts').required = true;
-    } else {
-        customPortsDiv.style.display = 'none';
-        document.getElementById('customPorts').required = false;
-    }
-    updateConfigPreview();
-});
+	    if (target) {
+	        // Auto-detect target type
+	        if (isValidDomain(target)) {
+	            targetType.value = 'domain';
+	            enableRecon.disabled = false;
+	        } else if (isValidIP(target)) {
+	            targetType.value = 'ip';
+	            enableRecon.disabled = true;
+	            enableRecon.checked = false;
+	        } else if (isValidCIDR(target)) {
+	            targetType.value = 'cidr';
+	            enableRecon.disabled = true;
+	            enableRecon.checked = false;
+	        } else {
+	            targetType.value = '';
+	        }
 
-document.getElementById('enableAITests').addEventListener('change', function() {
-    const aiTestOptions = document.getElementById('aiTestOptions');
-    aiTestOptions.style.display = this.checked ? 'block' : 'none';
-    updateConfigPreview();
-});
+	        updateConfigPreview();
+	        validateTarget();
+	    } else {
+	        targetType.value = '';
+	        enableRecon.disabled = false;
+	    }
+	});
 
-// Add event listeners for real-time preview updates
-['scanType', 'toolPreference', 'enableRecon', 'enablePredefinedTests', 'reportFormat'].forEach(id => {
-    document.getElementById(id).addEventListener('change', updateConfigPreview);
-});
+	document.getElementById('portSelection').addEventListener('change', function() {
+	    const customPortsDiv = document.getElementById('customPortsDiv');
+	    if (this.value === 'custom') {
+	        customPortsDiv.style.display = 'block';
+	        document.getElementById('customPorts').required = true;
+	    } else {
+	        customPortsDiv.style.display = 'none';
+	        document.getElementById('customPorts').required = false;
+	    }
+	    updateConfigPreview();
+	});
 
-function isValidDomain(str) {
-    const domainRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
-    return domainRegex.test(str) && str.length <= 253;
-}
+	document.getElementById('enableAITests').addEventListener('change', function() {
+	    const aiTestOptions = document.getElementById('aiTestOptions');
+	    aiTestOptions.style.display = this.checked ? 'block' : 'none';
+	    updateConfigPreview();
+	});
 
-function isValidIP(str) {
-    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    return ipRegex.test(str);
-}
+	// Add event listeners for real-time preview updates
+	['scanType', 'toolPreference', 'enableRecon', 'enablePredefinedTests', 'reportFormat'].forEach(id => {
+	    document.getElementById(id).addEventListener('change', updateConfigPreview);
+	});
 
-function isValidCIDR(str) {
-    const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]|[1-2][0-9]|3[0-2])$/;
-    return cidrRegex.test(str);
-}
+	function isValidDomain(str) {
+	    const domainRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
+	    return domainRegex.test(str) && str.length <= 253;
+	}
 
-function validateTarget() {
-    const target = document.getElementById('target').value.trim();
-    const targetInput = document.getElementById('target');
-    const feedback = document.getElementById('targetFeedback');
-    
-    if (target && !isValidDomain(target) && !isValidIP(target) && !isValidCIDR(target)) {
-        targetInput.classList.add('is-invalid');
-        feedback.textContent = 'Please enter a valid domain, IP address, or CIDR range';
-        return false;
-    } else {
-        targetInput.classList.remove('is-invalid');
-        return true;
-    }
-}
+	function isValidIP(str) {
+	    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+	    return ipRegex.test(str);
+	}
 
-function validatePorts() {
-    const portSelection = document.getElementById('portSelection').value;
-    const customPorts = document.getElementById('customPorts');
-    const feedback = document.getElementById('portsFeedback');
-    
-    if (portSelection === 'custom') {
-        const ports = customPorts.value.trim();
-        const portRegex = /^[0-9,-\s]+$/;
-        
-        if (!ports || !portRegex.test(ports)) {
-            customPorts.classList.add('is-invalid');
-            feedback.textContent = 'Please enter valid port numbers and ranges';
-            return false;
-        } else {
-            customPorts.classList.remove('is-invalid');
-            return true;
-        }
-    }
-    return true;
-}
+	function isValidCIDR(str) {
+	    const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]|[1-2][0-9]|3[0-2])$/;
+	    return cidrRegex.test(str);
+	}
 
-function validateConfiguration() {
-    const isValid = validateTarget() && validatePorts();
-    
-    if (isValid) {
-        showToast('Configuration is valid', 'success');
-    } else {
-        showToast('Please fix configuration errors', 'error');
-    }
-    
-    return isValid;
-}
+	function validateTarget() {
+	    const target = document.getElementById('target').value.trim();
+	    const targetInput = document.getElementById('target');
+	    const feedback = document.getElementById('targetFeedback');
 
-function updateConfigPreview() {
-    const target = document.getElementById('target').value.trim();
-    const targetType = document.getElementById('targetType').value;
-    const scanType = document.getElementById('scanType').value;
-    const portSelection = document.getElementById('portSelection').value;
-    const enableRecon = document.getElementById('enableRecon').checked;
-    const enableAI = document.getElementById('enableAITests').checked;
-    
-    if (!target) {
-        document.getElementById('configPreview').innerHTML = `
-            <div class="text-muted text-center py-3">
-                <i class="fas fa-info-circle fa-2x mb-2"></i>
-                <p>Enter target to see configuration preview</p>
-            </div>
-        `;
-        return;
-    }
-    
-    const preview = `
-        <div class="mb-3">
-            <strong>Target:</strong> ${target}<br>
-            <strong>Type:</strong> <span class="badge bg-secondary">${targetType || 'Auto-detect'}</span>
-        </div>
-        
-        <div class="mb-3">
-            <strong>Scan Configuration:</strong><br>
-            <small class="text-muted">
-                • Scan Type: ${scanType}<br>
-                • Ports: ${portSelection}<br>
-                • Reconnaissance: ${enableRecon ? 'Enabled' : 'Disabled'}
-            </small>
-        </div>
-        
-        <div class="mb-3">
-            <strong>Testing:</strong><br>
-            <small class="text-muted">
-                • Predefined Tests: ${document.getElementById('enablePredefinedTests').checked ? 'Yes' : 'No'}<br>
-                • AI-Generated Tests: ${enableAI ? 'Yes' : 'No'}
-            </small>
-        </div>
-        
-        <div class="alert alert-info alert-sm">
-            <i class="fas fa-clock me-1"></i>
-            <small>Estimated time: ${getEstimatedTime()}</small>
-        </div>
-    `;
-    
-    document.getElementById('configPreview').innerHTML = preview;
-}
+	    if (target && !isValidDomain(target) && !isValidIP(target) && !isValidCIDR(target)) {
+	        targetInput.classList.add('is-invalid');
+	        feedback.textContent = 'Please enter a valid domain, IP address, or CIDR range';
+	        return false;
+	    } else {
+	        targetInput.classList.remove('is-invalid');
+	        return true;
+	    }
+	}
 
-function getEstimatedTime() {
-    const scanType = document.getElementById('scanType').value;
-    const portSelection = document.getElementById('portSelection').value;
-    const enableRecon = document.getElementById('enableRecon').checked;
-    const enableAI = document.getElementById('enableAITests').checked;
-    
-    let timeMinutes = 0;
-    
-    // Base scanning time
-    if (scanType === 'quick') timeMinutes += 2;
-    else if (scanType === 'comprehensive') timeMinutes += 5;
-    else if (scanType === 'stealth') timeMinutes += 10;
-    else if (scanType === 'aggressive') timeMinutes += 3;
-    
-    // Port-based adjustment
-    if (portSelection === 'all') timeMinutes *= 10;
-    else if (portSelection === 'top_1000') timeMinutes *= 2;
-    
-    // Additional features
-    if (enableRecon) timeMinutes += 3;
-    if (enableAI) timeMinutes += 5;
-    
-    if (timeMinutes < 5) return '2-5 minutes';
-    else if (timeMinutes < 15) return '5-15 minutes';
-    else if (timeMinutes < 30) return '15-30 minutes';
-    else return '30+ minutes';
-}
+	function validatePorts() {
+	    const portSelection = document.getElementById('portSelection').value;
+	    const customPorts = document.getElementById('customPorts');
+	    const feedback = document.getElementById('portsFeedback');
 
-function loadTemplate(templateName) {
-    const templates = {
-        'quick_web': {
-            scanType: 'quick',
-            portSelection: 'common_web',
-            enableRecon: false,
-            enablePredefinedTests: true,
-            enableAITests: false,
-            toolPreference: 'nmap'
-        },
-        'comprehensive_network': {
-            scanType: 'comprehensive',
-            portSelection: 'top_1000',
-            enableRecon: true,
-            enablePredefinedTests: true,
-            enableAITests: true,
-            toolPreference: 'nmap'
-        },
-        'stealth_recon': {
-            scanType: 'stealth',
-            portSelection: 'top_100',
-            enableRecon: true,
-            enablePredefinedTests: false,
-            enableAITests: false,
-            toolPreference: 'nmap'
-        },
-        'ai_powered': {
-            scanType: 'comprehensive',
-            portSelection: 'top_1000',
-            enableRecon: true,
-            enablePredefinedTests: true,
-            enableAITests: true,
-            toolPreference: 'auto'
-        }
-    };
-    
-    const template = templates[templateName];
-    if (template) {
-        Object.keys(template).forEach(key => {
-            const element = document.getElementById(key);
-            if (element) {
-                if (element.type === 'checkbox') {
-                    element.checked = template[key];
-                } else {
-                    element.value = template[key];
-                }
-                element.dispatchEvent(new Event('change'));
-            }
-        });
-        
-        showToast(`Template "${templateName}" loaded`, 'success');
-    }
-}
+	    if (portSelection === 'custom') {
+	        const ports = customPorts.value.trim();
+	        const portRegex = /^[0-9,-\s]+$/;
 
-function resetForm() {
-    document.getElementById('assessmentForm').reset();
-    document.getElementById('customPortsDiv').style.display = 'none';
-    document.getElementById('aiTestOptions').style.display = 'none';
-    updateConfigPreview();
-    showToast('Form reset to defaults', 'info');
-}
+	        if (!ports || !portRegex.test(ports)) {
+	            customPorts.classList.add('is-invalid');
+	            feedback.textContent = 'Please enter valid port numbers and ranges';
+	            return false;
+	        } else {
+	            customPorts.classList.remove('is-invalid');
+	            return true;
+	        }
+	    }
+	    return true;
+	}
 
-function saveAsTemplate() {
-    // This would save the current configuration as a custom template
-    showToast('Template save feature coming soon', 'info');
-}
+	function validateConfiguration() {
+	    const isValid = validateTarget() && validatePorts();
 
-// Load tool status on page load
-function loadToolStatus() {
-    fetch('/api/tools/status')
-        .then(response => response.json())
-        .then(data => {
-            let html = '';
-            for (const [tool, available] of Object.entries(data)) {
-                const icon = available ? 'check-circle text-success' : 'times-circle text-danger';
-                const status = available ? 'Available' : 'Not Available';
-                
-                html += `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>${tool}</span>
-                        <span>
-                            <i class="fas fa-${icon} me-1"></i>
-                            <small>${status}</small>
-                        </span>
-                    </div>
-                `;
-            }
-            document.getElementById('toolStatus').innerHTML = html;
-        })
-        .catch(error => {
-            console.error('Error loading tool status:', error);
-            document.getElementById('toolStatus').innerHTML = 
-                '<div class="alert alert-warning alert-sm">Failed to load tool status</div>';
-        });
-}
+	    if (isValid) {
+	        showToast('Configuration is valid', 'success');
+	    } else {
+	        showToast('Please fix configuration errors', 'error');
+	    }
 
-// Form submission
-document.getElementById('assessmentForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    if (!validateConfiguration()) {
-        return;
-    }
-    
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
-    
-    // Convert checkboxes
-    data.enable_recon = document.getElementById('enableRecon').checked;
-    data.enable_predefined_tests = document.getElementById('enablePredefinedTests').checked;
-    data.enable_ai_tests = document.getElementById('enableAITests').checked;
-    data.require_approval = document.getElementById('requireApproval').checked;
-    
-    // Handle custom ports
-    if (data.port_selection === 'custom') {
-        data.ports = data.custom_ports;
-    } else {
-        data.ports = data.port_selection;
-    }
-    
-    // Show loading state
-    const submitButton = this.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    submitButton.innerHTML = '<div class="loading-spinner me-2"></div>Starting...';
-    submitButton.disabled = true;
-    
-    // Submit assessment
-    fetch('/api/assessments', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            showToast('Assessment started successfully', 'success');
-            setTimeout(() => {
-                window.location.href = `/assessment/${result.assessment_id}`;
-            }, 1500);
-        } else {
-            showToast(result.error || 'Failed to start assessment', 'error');
-            submitButton.innerHTML = originalText;
-            submitButton.disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error starting assessment:', error);
-        showToast('Failed to start assessment', 'error');
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-    });
-});
+	    return isValid;
+	}
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', function() {
-    // Target validation
-    const targetInput = document.getElementById('target');
-    const validateButton = document.getElementById('validateTarget');
-    const targetTypeSelect = document.getElementById('targetType');
-    
-    // Real-time target validation
-    targetInput.addEventListener('input', function() {
-        const target = this.value.trim();
-        if (target) {
-            // Basic validation
-            if (isValidDomain(target)) {
-                targetTypeSelect.value = 'domain';
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-                document.getElementById('targetSuccess').textContent = 'Valid domain detected';
-            } else if (isValidIP(target)) {
-                targetTypeSelect.value = 'ip';
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-                document.getElementById('targetSuccess').textContent = 'Valid IP address detected';
-            } else if (isValidCIDR(target)) {
-                targetTypeSelect.value = 'cidr';
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-                document.getElementById('targetSuccess').textContent = 'Valid CIDR range detected';
-            } else {
-                this.classList.remove('is-valid');
-                this.classList.add('is-invalid');
-                document.getElementById('targetFeedback').textContent = 'Invalid target format';
-                targetTypeSelect.value = '';
-            }
-        } else {
-            this.classList.remove('is-valid', 'is-invalid');
-            targetTypeSelect.value = '';
-        }
-    });
-    
-    // Validate button click
-    validateButton.addEventListener('click', function() {
-        const target = targetInput.value.trim();
-        if (!target) {
-            showToast('Please enter a target first', 'warning');
-            return;
-        }
-        
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-        this.disabled = true;
-        
-        // Simulate validation check (could make API call)
-        setTimeout(() => {
-            this.innerHTML = '<i class="fas fa-check"></i> Validate';
-            this.disabled = false;
-            showToast('Target validation completed', 'success');
-        }, 1000);
-    });
-    
-    updateFormState();
-});
+	function updateConfigPreview() {
+	    const target = document.getElementById('target').value.trim();
+	    const targetType = document.getElementById('targetType').value;
+	    const scanType = document.getElementById('scanType').value;
+	    const portSelection = document.getElementById('portSelection').value;
+	    const enableRecon = document.getElementById('enableRecon').checked;
+	    const enableAI = document.getElementById('enableAITests').checked;
 
-// Validation helper functions
-function isValidDomain(domain) {
-    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])*$/;
-    return domainRegex.test(domain);
-}
+	    if (!target) {
+	        document.getElementById('configPreview').innerHTML = `
+	            <div class="text-muted text-center py-3">
+	                <i class="fas fa-info-circle fa-2x mb-2"></i>
+	                <p>Enter target to see configuration preview</p>
+	            </div>
+	        `;
+	        return;
+	    }
 
-function isValidIP(ip) {
-    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    return ipRegex.test(ip);
-}
+	    const preview = `
+	        <div class="mb-3">
+	            <strong>Target:</strong> ${target}<br>
+	            <strong>Type:</strong> <span class="badge bg-secondary">${targetType || 'Auto-detect'}</span>
+	        </div>
 
-function isValidCIDR(cidr) {
-    const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[1-2][0-9]|3[0-2])$/;
-    return cidrRegex.test(cidr);
-}
-    loadToolStatus();
-    updateConfigPreview();
-});
+	        <div class="mb-3">
+	            <strong>Scan Configuration:</strong><br>
+	            <small class="text-muted">
+	                • Scan Type: ${scanType}<br>
+	                • Ports: ${portSelection}<br>
+	                • Reconnaissance: ${enableRecon ? 'Enabled' : 'Disabled'}
+	            </small>
+	        </div>
+
+	        <div class="mb-3">
+	            <strong>Testing:</strong><br>
+	            <small class="text-muted">
+	                • Predefined Tests: ${document.getElementById('enablePredefinedTests').checked ? 'Yes' : 'No'}<br>
+	                • AI-Generated Tests: ${enableAI ? 'Yes' : 'No'}
+	            </small>
+	        </div>
+
+	        <div class="alert alert-info alert-sm">
+	            <i class="fas fa-clock me-1"></i>
+	            <small>Estimated time: ${getEstimatedTime()}</small>
+	        </div>
+	    `;
+
+	    document.getElementById('configPreview').innerHTML = preview;
+	}
+
+	function getEstimatedTime() {
+	    const scanType = document.getElementById('scanType').value;
+	    const portSelection = document.getElementById('portSelection').value;
+	    const enableRecon = document.getElementById('enableRecon').checked;
+	    const enableAI = document.getElementById('enableAITests').checked;
+
+	    let timeMinutes = 0;
+
+	    // Base scanning time
+	    if (scanType === 'quick') timeMinutes += 2;
+	    else if (scanType === 'comprehensive') timeMinutes += 5;
+	    else if (scanType === 'stealth') timeMinutes += 10;
+	    else if (scanType === 'aggressive') timeMinutes += 3;
+
+	    // Port-based adjustment
+	    if (portSelection === 'all') timeMinutes *= 10;
+	    else if (portSelection === 'top_1000') timeMinutes *= 2;
+
+	    // Additional features
+	    if (enableRecon) timeMinutes += 3;
+	    if (enableAI) timeMinutes += 5;
+
+	    if (timeMinutes < 5) return '2-5 minutes';
+	    else if (timeMinutes < 15) return '5-15 minutes';
+	    else if (timeMinutes < 30) return '15-30 minutes';
+	    else return '30+ minutes';
+	}
+
+	function loadTemplate(templateName) {
+	    const templates = {
+	        'quick_web': {
+	            scanType: 'quick',
+	            portSelection: 'common_web',
+	            enableRecon: false,
+	            enablePredefinedTests: true,
+	            enableAITests: false,
+	            toolPreference: 'nmap'
+	        },
+	        'comprehensive_network': {
+	            scanType: 'comprehensive',
+	            portSelection: 'top_1000',
+	            enableRecon: true,
+	            enablePredefinedTests: true,
+	            enableAITests: true,
+	            toolPreference: 'nmap'
+	        },
+	        'stealth_recon': {
+	            scanType: 'stealth',
+	            portSelection: 'top_100',
+	            enableRecon: true,
+	            enablePredefinedTests: false,
+	            enableAITests: false,
+	            toolPreference: 'nmap'
+	        },
+	        'ai_powered': {
+	            scanType: 'comprehensive',
+	            portSelection: 'top_1000',
+	            enableRecon: true,
+	            enablePredefinedTests: true,
+	            enableAITests: true,
+	            toolPreference: 'auto'
+	        }
+	    };
+
+	    const template = templates[templateName];
+	    if (template) {
+	        Object.keys(template).forEach(key => {
+	            const element = document.getElementById(key);
+	            if (element) {
+	                if (element.type === 'checkbox') {
+	                    element.checked = template[key];
+	                } else {
+	                    element.value = template[key];
+	                }
+	                element.dispatchEvent(new Event('change'));
+	            }
+	        });
+
+	        showToast(`Template "${templateName}" loaded`, 'success');
+	    }
+	}
+
+	function resetForm() {
+	    document.getElementById('assessmentForm').reset();
+	    document.getElementById('customPortsDiv').style.display = 'none';
+	    document.getElementById('aiTestOptions').style.display = 'none';
+	    updateConfigPreview();
+	    showToast('Form reset to defaults', 'info');
+	}
+
+	function saveAsTemplate() {
+	    // This would save the current configuration as a custom template
+	    showToast('Template save feature coming soon', 'info');
+	}
+
+	// Load tool status on page load
+	function loadToolStatus() {
+	    fetch('/api/tools/status')
+	        .then(response => response.json())
+	        .then(data => {
+	            let html = '';
+	            for (const [tool, available] of Object.entries(data)) {
+	                const icon = available ? 'check-circle text-success' : 'times-circle text-danger';
+	                const status = available ? 'Available' : 'Not Available';
+
+	                html += `
+	                    <div class="d-flex justify-content-between align-items-center mb-2">
+	                        <span>${tool}</span>
+	                        <span>
+	                            <i class="fas fa-${icon} me-1"></i>
+	                            <small>${status}</small>
+	                        </span>
+	                    </div>
+	                `;
+	            }
+	            document.getElementById('toolStatus').innerHTML = html;
+	        })
+	        .catch(error => {
+	            console.error('Error loading tool status:', error);
+	            document.getElementById('toolStatus').innerHTML =
+	                '<div class="alert alert-warning alert-sm">Failed to load tool status</div>';
+	        });
+	}
+
+	// Form submission
+	document.getElementById('assessmentForm').addEventListener('submit', function(e) {
+	    e.preventDefault();
+
+	    if (!validateConfiguration()) {
+	        return;
+	    }
+
+	    const formData = new FormData(this);
+	    const data = Object.fromEntries(formData.entries());
+
+	    // Convert checkboxes
+	    data.enable_recon = document.getElementById('enableRecon').checked;
+	    data.enable_predefined_tests = document.getElementById('enablePredefinedTests').checked;
+	    data.enable_ai_tests = document.getElementById('enableAITests').checked;
+	    data.require_approval = document.getElementById('requireApproval').checked;
+
+	    // Handle custom ports
+	    if (data.port_selection === 'custom') {
+	        data.ports = data.custom_ports;
+	    } else {
+	        data.ports = data.port_selection;
+	    }
+
+	    // Show loading state
+	    const submitButton = this.querySelector('button[type="submit"]');
+	    const originalText = submitButton.innerHTML;
+	    submitButton.innerHTML = '<div class="loading-spinner me-2"></div>Starting...';
+	    submitButton.disabled = true;
+
+	    // Submit assessment
+	    fetch('/api/assessments', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify(data)
+	    })
+	    .then(response => response.json())
+	    .then(result => {
+	        if (result.success) {
+	            showToast('Assessment started successfully', 'success');
+	            setTimeout(() => {
+	                window.location.href = `/assessment/${result.assessment_id}`;
+	            }, 1500);
+	        } else {
+	            showToast(result.error || 'Failed to start assessment', 'error');
+	            submitButton.innerHTML = originalText;
+	            submitButton.disabled = false;
+	        }
+	    })
+	    .catch(error => {
+	        console.error('Error starting assessment:', error);
+	        showToast('Failed to start assessment', 'error');
+	        submitButton.innerHTML = originalText;
+	        submitButton.disabled = false;
+	    });
+	});
+
+	// Initialize page
+	document.addEventListener('DOMContentLoaded', function() {
+	    // Target validation
+	    const targetInput = document.getElementById('target');
+	    const validateButton = document.getElementById('validateTarget');
+	    const targetTypeSelect = document.getElementById('targetType');
+
+	    // Real-time target validation
+	    targetInput.addEventListener('input', function() {
+	        const target = this.value.trim();
+	        if (target) {
+	            // Basic validation
+	            if (isValidDomain(target)) {
+	                targetTypeSelect.value = 'domain';
+	                this.classList.remove('is-invalid');
+	                this.classList.add('is-valid');
+	                document.getElementById('targetSuccess').textContent = 'Valid domain detected';
+	            } else if (isValidIP(target)) {
+	                targetTypeSelect.value = 'ip';
+	                this.classList.remove('is-invalid');
+	                this.classList.add('is-valid');
+	                document.getElementById('targetSuccess').textContent = 'Valid IP address detected';
+	            } else if (isValidCIDR(target)) {
+	                targetTypeSelect.value = 'cidr';
+	                this.classList.remove('is-invalid');
+	                this.classList.add('is-valid');
+	                document.getElementById('targetSuccess').textContent = 'Valid CIDR range detected';
+	            } else {
+	                this.classList.remove('is-valid');
+	                this.classList.add('is-invalid');
+	                document.getElementById('targetFeedback').textContent = 'Invalid target format';
+	                targetTypeSelect.value = '';
+	            }
+	        } else {
+	            this.classList.remove('is-valid', 'is-invalid');
+	            targetTypeSelect.value = '';
+	        }
+	    });
+
+	    // Validate button click
+	    validateButton.addEventListener('click', function() {
+	        const target = targetInput.value.trim();
+	        if (!target) {
+	            showToast('Please enter a target first', 'warning');
+	            return;
+	        }
+
+	        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+	        this.disabled = true;
+
+	        // Simulate validation check (could make API call)
+	        setTimeout(() => {
+	            this.innerHTML = '<i class="fas fa-check"></i> Validate';
+	            this.disabled = false;
+	            showToast('Target validation completed', 'success');
+	        }, 1000);
+	    });
+
+	    updateFormState();
+	});
+
+	// Validation helper functions
+	function isValidDomain(domain) {
+	    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])*$/;
+	    return domainRegex.test(domain);
+	}
+
+	function isValidIP(ip) {
+	    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+	    return ipRegex.test(ip);
+	}
+
+	function isValidCIDR(cidr) {
+	    const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[1-2][0-9]|3[0-2])$/;
+	    return cidrRegex.test(cidr);
+	}
+	    loadToolStatus();
+	    updateConfigPreview();
+	});
 </script>
 {% endblock %}

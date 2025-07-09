@@ -1,57 +1,70 @@
-{% extends "base.html" %}
-
-{% block title %}Error - Cybersecurity Automation{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Error - Cybersecurity Automation{%
+endblock %} {% block content %}
 <div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white text-center">
-                    <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
-                </div>
-                <div class="card-body text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-times-circle fa-4x text-danger"></i>
-                    </div>
-                    
-                    {% if error %}
-                    <h5 class="card-title">Something went wrong</h5>
-                    <p class="card-text text-muted">{{ error }}</p>
-                    {% else %}
-                    <h5 class="card-title">An unexpected error occurred</h5>
-                    <p class="card-text text-muted">Please try again later or contact support if the problem persists.</p>
-                    {% endif %}
-                    
-                    <div class="mt-4">
-                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary me-2">
-                            <i class="fas fa-home"></i> Return to Dashboard
-                        </a>
-                        <button onclick="history.back()" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Go Back
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Additional help -->
-            <div class="card mt-3">
-                <div class="card-body">
-                    <h6 class="card-title"><i class="fas fa-question-circle"></i> Need Help?</h6>
-                    <ul class="list-unstyled mb-0">
-                        <li><a href="{{ url_for('dashboard') }}" class="text-decoration-none">
-                            <i class="fas fa-chart-line"></i> Check system status
-                        </a></li>
-                        <li><a href="{{ url_for('assessments') }}" class="text-decoration-none">
-                            <i class="fas fa-list"></i> View all assessments
-                        </a></li>
-                        <li><a href="{{ url_for('new_assessment') }}" class="text-decoration-none">
-                            <i class="fas fa-plus"></i> Start new assessment
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+			<div class="card border-danger">
+				<div class="card-header bg-danger text-white text-center">
+					<h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+				</div>
+				<div class="card-body text-center">
+					<div class="mb-4">
+						<i class="fas fa-times-circle fa-4x text-danger"></i>
+					</div>
+
+					{% if error %}
+					<h5 class="card-title">Something went wrong</h5>
+					<p class="card-text text-muted">{{ error }}</p>
+					{% else %}
+					<h5 class="card-title">An unexpected error occurred</h5>
+					<p class="card-text text-muted">
+						Please try again later or contact support if the problem persists.
+					</p>
+					{% endif %}
+
+					<div class="mt-4">
+						<a href="{{ url_for('dashboard') }}" class="btn btn-primary me-2">
+							<i class="fas fa-home"></i> Return to Dashboard
+						</a>
+						<button onclick="history.back()" class="btn btn-outline-secondary">
+							<i class="fas fa-arrow-left"></i> Go Back
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Additional help -->
+			<div class="card mt-3">
+				<div class="card-body">
+					<h6 class="card-title">
+						<i class="fas fa-question-circle"></i> Need Help?
+					</h6>
+					<ul class="list-unstyled mb-0">
+						<li>
+							<a href="{{ url_for('dashboard') }}" class="text-decoration-none">
+								<i class="fas fa-chart-line"></i> Check system status
+							</a>
+						</li>
+						<li>
+							<a
+								href="{{ url_for('assessments') }}"
+								class="text-decoration-none"
+							>
+								<i class="fas fa-list"></i> View all assessments
+							</a>
+						</li>
+						<li>
+							<a
+								href="{{ url_for('new_assessment') }}"
+								class="text-decoration-none"
+							>
+								<i class="fas fa-plus"></i> Start new assessment
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}

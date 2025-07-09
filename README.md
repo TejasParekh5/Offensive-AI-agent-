@@ -12,23 +12,27 @@ A comprehensive multi-agent cybersecurity automation system with real-time dashb
 ## 🌟 Features
 
 ### 🤖 Intelligent Agents
+
 - **🕵️ Recon Agent**: Domain reconnaissance using Shodan, theHarvester, Amass
-- **🔍 Scanning Agent**: Port and service discovery with Nmap, Masscan, Rustscan  
+- **🔍 Scanning Agent**: Port and service discovery with Nmap, Masscan, Rustscan
 - **🧪 Test Case Agent**: Automated testing with AI-generated test cases
 
 ### 🦙 Local AI Integration
+
 - **Llama 3.1 8B**: Local LLM for test case generation (no API costs!)
 - **Privacy-Focused**: All AI processing happens locally
 - **Offline Capable**: Works without internet after initial setup
 - **Memory Optimized**: 4-bit quantization support
 
 ### 📊 Real-time Dashboard
+
 - **Interactive Interface**: Streamlit-based web dashboard
 - **Live Progress Tracking**: Real-time assessment monitoring
 - **Human-in-the-Loop**: AI test case approval workflow
 - **Multi-format Reports**: JSON, HTML, PDF generation
 
 ### 🔧 Tool Integration
+
 - **Shodan**: API integration for infrastructure intelligence
 - **Nmap/Masscan/Rustscan**: Comprehensive port scanning
 - **theHarvester/Amass**: OSINT and subdomain enumeration
@@ -52,12 +56,14 @@ A comprehensive multi-agent cybersecurity automation system with real-time dashb
 ## 🚀 Quick Start
 
 ### 1. Clone Repository
+
 ```bash
 git clone https://github.com/TejasParekh5/Offensive-AI-agent-.git
 cd Offensive-AI-agent-
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 # Complete setup with Llama 3.1 8B (recommended)
 python setup_and_test.py all
@@ -70,6 +76,7 @@ pip install -r requirements.txt
 ```
 
 ### 3. Configure Environment
+
 ```bash
 # Copy environment template
 cp .env.example .env
@@ -80,6 +87,7 @@ cp .env.example .env
 ```
 
 ### 4. Launch Dashboard
+
 ```bash
 python main.py dashboard
 # OR
@@ -87,6 +95,7 @@ streamlit run dashboard.py
 ```
 
 ### 5. Run Your First Assessment
+
 1. Open browser to `http://localhost:8501`
 2. Navigate to "🔍 New Assessment"
 3. Enter target (e.g., `example.com` or `192.168.1.1`)
@@ -96,6 +105,7 @@ streamlit run dashboard.py
 ## 💻 System Requirements
 
 ### Minimum (CPU-only with quantization)
+
 - **OS**: Windows 10+, Ubuntu 18+, macOS 10.15+
 - **Python**: 3.8+
 - **RAM**: 8GB (12GB recommended)
@@ -103,12 +113,14 @@ streamlit run dashboard.py
 - **Network**: Internet for initial model download
 
 ### Recommended (GPU acceleration)
+
 - **RAM**: 16GB+
 - **GPU**: NVIDIA GPU with 8GB+ VRAM
 - **CUDA**: 11.8+ or 12.x
 - **Storage**: SSD with 30GB+ free space
 
 ### Supported Tools
+
 - **Required**: Python 3.8+, pip
 - **Optional**: Nmap, Masscan, Rustscan, theHarvester, Amass
 - **APIs**: Shodan (for enhanced recon)
@@ -116,6 +128,7 @@ streamlit run dashboard.py
 ## 🔧 Configuration
 
 ### Environment Variables (.env)
+
 ```bash
 # API Keys
 SHODAN_API_KEY=your_shodan_key
@@ -138,7 +151,9 @@ LOG_LEVEL=INFO
 ```
 
 ### Dashboard Settings
+
 Access `⚙️ Settings` in the dashboard to:
+
 - Configure API keys
 - Test Llama model status
 - Adjust generation parameters
@@ -148,6 +163,7 @@ Access `⚙️ Settings` in the dashboard to:
 ## 📚 Usage Examples
 
 ### CLI Interface
+
 ```bash
 # Launch interactive dashboard
 python main.py dashboard
@@ -163,6 +179,7 @@ python main.py report --session session_id --format pdf
 ```
 
 ### Programmatic Usage
+
 ```python
 from agents.recon_agent import ReconAgent
 from agents.scanning_agent import ScanningAgent
@@ -182,6 +199,7 @@ test_cases = llama.generate_test_cases(target_info, scan_results)
 ## 🔬 AI Model Options
 
 ### 1. Llama 3.1 8B (Recommended)
+
 ```bash
 # Complete setup including Llama
 python setup_and_test.py all
@@ -197,6 +215,7 @@ python setup_and_test.py test-llama
 **Cons**: Requires significant hardware resources
 
 ### 2. OpenAI GPT (Cloud)
+
 ```bash
 OPENAI_API_KEY=sk-your_key_here
 ```
@@ -205,6 +224,7 @@ OPENAI_API_KEY=sk-your_key_here
 **Cons**: API costs, requires internet, data sent to OpenAI
 
 ### 3. Anthropic Claude (Cloud)
+
 ```bash
 ANTHROPIC_API_KEY=your_key_here
 ```
@@ -258,14 +278,16 @@ python setup_and_test.py tools
 ## 📈 Performance Benchmarks
 
 ### Llama 3.1 8B Performance
-| Hardware | Generation Time | Memory Usage |
-|----------|----------------|--------------|
-| RTX 4080 | 30-60 seconds | 8-10GB VRAM |
-| RTX 3070 | 45-90 seconds | 6-8GB VRAM |
-| CPU i7 | 2-5 minutes | 12-16GB RAM |
-| CPU (Quantized) | 3-7 minutes | 8-12GB RAM |
+
+| Hardware        | Generation Time | Memory Usage |
+| --------------- | --------------- | ------------ |
+| RTX 4080        | 30-60 seconds   | 8-10GB VRAM  |
+| RTX 3070        | 45-90 seconds   | 6-8GB VRAM   |
+| CPU i7          | 2-5 minutes     | 12-16GB RAM  |
+| CPU (Quantized) | 3-7 minutes     | 8-12GB RAM   |
 
 ### Assessment Speed
+
 - **Small target**: 5-15 minutes (domain + basic scan)
 - **Medium target**: 15-45 minutes (full recon + comprehensive scan)
 - **Large target**: 45+ minutes (enterprise-grade assessment)
@@ -273,9 +295,11 @@ python setup_and_test.py tools
 ## 🛡️ Security & Legal Notice
 
 ### ⚠️ Important Legal Disclaimer
+
 This tool is designed for **authorized penetration testing and security assessments only**. Users are responsible for ensuring compliance with applicable laws and regulations.
 
 ### Ethical Use Guidelines
+
 - ✅ Authorized security assessments
 - ✅ Bug bounty programs
 - ✅ Educational/research purposes
@@ -285,6 +309,7 @@ This tool is designed for **authorized penetration testing and security assessme
 - ❌ Illegal purposes
 
 ### Privacy & Data Handling
+
 - **Llama 3.1 8B**: All processing happens locally
 - **Cloud APIs**: Data sent to respective providers
 - **Database**: Local SQLite storage
@@ -295,6 +320,7 @@ This tool is designed for **authorized penetration testing and security assessme
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 ### Development Setup
+
 ```bash
 # Clone repository
 git clone https://github.com/TejasParekh5/Offensive-AI-agent-.git
@@ -311,6 +337,7 @@ streamlit run dashboard.py --server.runOnSave true
 ```
 
 ### Areas for Contribution
+
 - 🔧 Additional tool integrations
 - 🧠 LLM model improvements
 - 📊 Enhanced visualizations
@@ -337,18 +364,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🗺️ Roadmap
 
 ### 🔄 Current (v1.0)
+
 - ✅ Multi-agent architecture
 - ✅ Llama 3.1 8B integration
 - ✅ Real-time dashboard
 - ✅ Report generation
 
 ### 🎯 Near-term (v1.1)
+
 - 🔄 Enhanced tool integration
 - 🔄 Batch processing
 - 🔄 API endpoints
 - 🔄 Docker containerization
 
 ### 🚀 Future (v2.0)
+
 - 📋 Fine-tuned security models
 - 📋 Multi-target campaigns
 - 📋 Collaborative features

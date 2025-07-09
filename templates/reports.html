@@ -1,372 +1,431 @@
-{% extends "base.html" %}
-
-{% block title %}Reports - Cybersecurity Automation{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Reports - Cybersecurity Automation{%
+endblock %} {% block content %}
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-file-alt"></i> Assessment Reports</h2>
-                <div>
-                    <button class="btn btn-outline-primary" onclick="exportAllReports()">
-                        <i class="fas fa-download"></i> Export All
-                    </button>
-                </div>
-            </div>
+	<div class="row">
+		<div class="col-12">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h2><i class="fas fa-file-alt"></i> Assessment Reports</h2>
+				<div>
+					<button class="btn btn-outline-primary" onclick="exportAllReports()">
+						<i class="fas fa-download"></i> Export All
+					</button>
+				</div>
+			</div>
 
-            {% if assessments %}
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <div class="card bg-primary text-white">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Total Reports</h5>
-                            <h2>{{ assessments|length }}</h2>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-success text-white">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Completed Today</h5>
-                            <h2>
-                                {{ assessments|selectattr('created_at')|selectattr('created_at', 'ge', today)|list|length if today else 0 }}
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-warning text-white">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Total Vulnerabilities</h5>
-                            <h2>
-                                {% set total_vulns = 0 %}
-                                {% for assessment in assessments %}
-                                    {% if assessment.test_results %}
-                                        {% set total_vulns = total_vulns + assessment.test_results|length %}
-                                    {% endif %}
-                                {% endfor %}
-                                {{ total_vulns }}
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
+			{% if assessments %}
+			<div class="row mb-4">
+				<div class="col-md-4">
+					<div class="card bg-primary text-white">
+						<div class="card-body text-center">
+							<h5 class="card-title">Total Reports</h5>
+							<h2>{{ assessments|length }}</h2>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card bg-success text-white">
+						<div class="card-body text-center">
+							<h5 class="card-title">Completed Today</h5>
+							<h2>
+								{{ assessments|selectattr('created_at')|selectattr('created_at',
+								'ge', today)|list|length if today else 0 }}
+							</h2>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card bg-warning text-white">
+						<div class="card-body text-center">
+							<h5 class="card-title">Total Vulnerabilities</h5>
+							<h2>
+								{% set total_vulns = 0 %} {% for assessment in assessments %} {%
+								if assessment.test_results %} {% set total_vulns = total_vulns +
+								assessment.test_results|length %} {% endif %} {% endfor %} {{
+								total_vulns }}
+							</h2>
+						</div>
+					</div>
+				</div>
+			</div>
 
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Available Reports</h5>
-                    <div class="input-group" style="width: 300px;">
-                        <input type="text" class="form-control" placeholder="Search reports..." 
-                               id="reportSearch" onkeyup="filterReports()">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="reportsTable">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>
-                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                                    </th>
-                                    <th>Target</th>
-                                    <th>Date</th>
-                                    <th>Duration</th>
-                                    <th>Findings</th>
-                                    <th>Risk Level</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for assessment in assessments %}
-                                <tr class="report-row">
-                                    <td>
-                                        <input type="checkbox" class="report-checkbox" value="{{ assessment.id }}">
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <code>{{ assessment.target }}</code>
-                                            <br>
-                                            <small class="text-muted">
-                                                {% if assessment.target_type == 'domain' %}
-                                                    <i class="fas fa-globe"></i> Domain
-                                                {% elif assessment.target_type == 'ip' %}
-                                                    <i class="fas fa-server"></i> IP Address
-                                                {% else %}
-                                                    <i class="fas fa-question"></i> {{ assessment.target_type }}
-                                                {% endif %}
-                                            </small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            {{ assessment.created_at.strftime('%Y-%m-%d') if assessment.created_at else 'N/A' }}
-                                            <br>
-                                            <small class="text-muted">{{ assessment.created_at.strftime('%H:%M') if assessment.created_at else '' }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if assessment.completed_at and assessment.created_at %}
-                                            {% set duration = (assessment.completed_at - assessment.created_at).total_seconds() %}
-                                            {% if duration < 60 %}
-                                                {{ duration|int }}s
-                                            {% elif duration < 3600 %}
-                                                {{ (duration / 60)|int }}m
-                                            {% else %}
-                                                {{ (duration / 3600)|round(1) }}h
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="text-muted">-</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% set vuln_count = assessment.test_results|length if assessment.test_results else 0 %}
-                                        {% set port_count = assessment.scan_results|length if assessment.scan_results else 0 %}
-                                        <div>
-                                            <span class="badge bg-warning">{{ vuln_count }} vulns</span>
-                                            <br>
-                                            <small class="text-muted">{{ port_count }} ports</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if assessment.test_results %}
-                                            {% set high_vulns = assessment.test_results|selectattr('severity', 'equalto', 'high')|list|length %}
-                                            {% set medium_vulns = assessment.test_results|selectattr('severity', 'equalto', 'medium')|list|length %}
-                                            {% set low_vulns = assessment.test_results|selectattr('severity', 'equalto', 'low')|list|length %}
-                                            {% if high_vulns > 0 %}
-                                                <span class="badge bg-danger">High</span>
-                                            {% elif medium_vulns > 0 %}
-                                                <span class="badge bg-warning">Medium</span>
-                                            {% elif low_vulns > 0 %}
-                                                <span class="badge bg-info">Low</span>
-                                            {% else %}
-                                                <span class="badge bg-success">Clean</span>
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="badge bg-secondary">No Tests</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ url_for('assessment_detail', assessment_id=assessment.id) }}" 
-                                               class="btn btn-sm btn-outline-primary" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <div class="btn-group" role="group">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" 
-                                                        data-bs-toggle="dropdown" title="Download Report">
-                                                    <i class="fas fa-download"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" 
-                                                           href="{{ url_for('download_report', assessment_id=assessment.id, format='pdf') }}">
-                                                        <i class="fas fa-file-pdf text-danger"></i> PDF Report
-                                                    </a></li>
-                                                    <li><a class="dropdown-item" 
-                                                           href="{{ url_for('download_report', assessment_id=assessment.id, format='json') }}">
-                                                        <i class="fas fa-file-code text-primary"></i> JSON Export
-                                                    </a></li>
-                                                    <li><a class="dropdown-item" 
-                                                           href="{{ url_for('download_report', assessment_id=assessment.id, format='csv') }}">
-                                                        <i class="fas fa-file-csv text-success"></i> CSV Export
-                                                    </a></li>
-                                                </ul>
-                                            </div>
-                                            <button class="btn btn-sm btn-outline-danger" 
-                                                    onclick="deleteReport('{{ assessment.id }}')" title="Delete Report">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+			<div class="card">
+				<div
+					class="card-header d-flex justify-content-between align-items-center"
+				>
+					<h5 class="mb-0">Available Reports</h5>
+					<div class="input-group" style="width: 300px">
+						<input
+							type="text"
+							class="form-control"
+							placeholder="Search reports..."
+							id="reportSearch"
+							onkeyup="filterReports()"
+						/>
+						<button class="btn btn-outline-secondary" type="button">
+							<i class="fas fa-search"></i>
+						</button>
+					</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover mb-0" id="reportsTable">
+							<thead class="table-dark">
+								<tr>
+									<th>
+										<input
+											type="checkbox"
+											id="selectAll"
+											onchange="toggleSelectAll()"
+										/>
+									</th>
+									<th>Target</th>
+									<th>Date</th>
+									<th>Duration</th>
+									<th>Findings</th>
+									<th>Risk Level</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for assessment in assessments %}
+								<tr class="report-row">
+									<td>
+										<input
+											type="checkbox"
+											class="report-checkbox"
+											value="{{ assessment.id }}"
+										/>
+									</td>
+									<td>
+										<div>
+											<code>{{ assessment.target }}</code>
+											<br />
+											<small class="text-muted">
+												{% if assessment.target_type == 'domain' %}
+												<i class="fas fa-globe"></i> Domain {% elif
+												assessment.target_type == 'ip' %}
+												<i class="fas fa-server"></i> IP Address {% else %}
+												<i class="fas fa-question"></i> {{
+												assessment.target_type }} {% endif %}
+											</small>
+										</div>
+									</td>
+									<td>
+										<div>
+											{{ assessment.created_at.strftime('%Y-%m-%d') if
+											assessment.created_at else 'N/A' }}
+											<br />
+											<small class="text-muted"
+												>{{ assessment.created_at.strftime('%H:%M') if
+												assessment.created_at else '' }}</small
+											>
+										</div>
+									</td>
+									<td>
+										{% if assessment.completed_at and assessment.created_at %}
+										{% set duration = (assessment.completed_at -
+										assessment.created_at).total_seconds() %} {% if duration <
+										60 %} {{ duration|int }}s {% elif duration < 3600 %} {{
+										(duration / 60)|int }}m {% else %} {{ (duration /
+										3600)|round(1) }}h {% endif %} {% else %}
+										<span class="text-muted">-</span>
+										{% endif %}
+									</td>
+									<td>
+										{% set vuln_count = assessment.test_results|length if
+										assessment.test_results else 0 %} {% set port_count =
+										assessment.scan_results|length if assessment.scan_results
+										else 0 %}
+										<div>
+											<span class="badge bg-warning"
+												>{{ vuln_count }} vulns</span
+											>
+											<br />
+											<small class="text-muted">{{ port_count }} ports</small>
+										</div>
+									</td>
+									<td>
+										{% if assessment.test_results %} {% set high_vulns =
+										assessment.test_results|selectattr('severity', 'equalto',
+										'high')|list|length %} {% set medium_vulns =
+										assessment.test_results|selectattr('severity', 'equalto',
+										'medium')|list|length %} {% set low_vulns =
+										assessment.test_results|selectattr('severity', 'equalto',
+										'low')|list|length %} {% if high_vulns > 0 %}
+										<span class="badge bg-danger">High</span>
+										{% elif medium_vulns > 0 %}
+										<span class="badge bg-warning">Medium</span>
+										{% elif low_vulns > 0 %}
+										<span class="badge bg-info">Low</span>
+										{% else %}
+										<span class="badge bg-success">Clean</span>
+										{% endif %} {% else %}
+										<span class="badge bg-secondary">No Tests</span>
+										{% endif %}
+									</td>
+									<td>
+										<div class="btn-group" role="group">
+											<a
+												href="{{ url_for('assessment_detail', assessment_id=assessment.id) }}"
+												class="btn btn-sm btn-outline-primary"
+												title="View Details"
+											>
+												<i class="fas fa-eye"></i>
+											</a>
+											<div class="btn-group" role="group">
+												<button
+													type="button"
+													class="btn btn-sm btn-outline-secondary dropdown-toggle"
+													data-bs-toggle="dropdown"
+													title="Download Report"
+												>
+													<i class="fas fa-download"></i>
+												</button>
+												<ul class="dropdown-menu">
+													<li>
+														<a
+															class="dropdown-item"
+															href="{{ url_for('download_report', assessment_id=assessment.id, format='pdf') }}"
+														>
+															<i class="fas fa-file-pdf text-danger"></i> PDF
+															Report
+														</a>
+													</li>
+													<li>
+														<a
+															class="dropdown-item"
+															href="{{ url_for('download_report', assessment_id=assessment.id, format='json') }}"
+														>
+															<i class="fas fa-file-code text-primary"></i> JSON
+															Export
+														</a>
+													</li>
+													<li>
+														<a
+															class="dropdown-item"
+															href="{{ url_for('download_report', assessment_id=assessment.id, format='csv') }}"
+														>
+															<i class="fas fa-file-csv text-success"></i> CSV
+															Export
+														</a>
+													</li>
+												</ul>
+											</div>
+											<button
+												class="btn btn-sm btn-outline-danger"
+												onclick="deleteReport('{{ assessment.id }}')"
+												title="Delete Report"
+											>
+												<i class="fas fa-trash"></i>
+											</button>
+										</div>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
 
-            <!-- Bulk Actions -->
-            <div class="card mt-3" id="bulkActions" style="display: none;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span><span id="selectedCount">0</span> reports selected</span>
-                        <div>
-                            <button class="btn btn-primary me-2" onclick="bulkDownload('pdf')">
-                                <i class="fas fa-file-pdf"></i> Download as PDF
-                            </button>
-                            <button class="btn btn-success me-2" onclick="bulkDownload('csv')">
-                                <i class="fas fa-file-csv"></i> Export as CSV
-                            </button>
-                            <button class="btn btn-danger" onclick="bulkDelete()">
-                                <i class="fas fa-trash"></i> Delete Selected
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+			<!-- Bulk Actions -->
+			<div class="card mt-3" id="bulkActions" style="display: none">
+				<div class="card-body">
+					<div class="d-flex justify-content-between align-items-center">
+						<span><span id="selectedCount">0</span> reports selected</span>
+						<div>
+							<button
+								class="btn btn-primary me-2"
+								onclick="bulkDownload('pdf')"
+							>
+								<i class="fas fa-file-pdf"></i> Download as PDF
+							</button>
+							<button
+								class="btn btn-success me-2"
+								onclick="bulkDownload('csv')"
+							>
+								<i class="fas fa-file-csv"></i> Export as CSV
+							</button>
+							<button class="btn btn-danger" onclick="bulkDelete()">
+								<i class="fas fa-trash"></i> Delete Selected
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
-            {% else %}
-            <div class="card">
-                <div class="card-body text-center py-5">
-                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">No Reports Available</h4>
-                    <p class="text-muted mb-4">Complete some security assessments to generate reports.</p>
-                    <a href="{{ url_for('new_assessment') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Start New Assessment
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
+			{% else %}
+			<div class="card">
+				<div class="card-body text-center py-5">
+					<i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+					<h4 class="text-muted">No Reports Available</h4>
+					<p class="text-muted mb-4">
+						Complete some security assessments to generate reports.
+					</p>
+					<a href="{{ url_for('new_assessment') }}" class="btn btn-primary">
+						<i class="fas fa-plus"></i> Start New Assessment
+					</a>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
 </div>
 
 <script>
-function filterReports() {
-    const searchTerm = document.getElementById('reportSearch').value.toLowerCase();
-    const rows = document.querySelectorAll('.report-row');
-    
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
-}
+	function filterReports() {
+		const searchTerm = document
+			.getElementById("reportSearch")
+			.value.toLowerCase();
+		const rows = document.querySelectorAll(".report-row");
 
-function toggleSelectAll() {
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('.report-checkbox');
-    
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = selectAll.checked;
-    });
-    
-    updateBulkActions();
-}
+		rows.forEach((row) => {
+			const text = row.textContent.toLowerCase();
+			row.style.display = text.includes(searchTerm) ? "" : "none";
+		});
+	}
 
-function updateBulkActions() {
-    const checkboxes = document.querySelectorAll('.report-checkbox:checked');
-    const bulkActions = document.getElementById('bulkActions');
-    const selectedCount = document.getElementById('selectedCount');
-    
-    selectedCount.textContent = checkboxes.length;
-    bulkActions.style.display = checkboxes.length > 0 ? 'block' : 'none';
-}
+	function toggleSelectAll() {
+		const selectAll = document.getElementById("selectAll");
+		const checkboxes = document.querySelectorAll(".report-checkbox");
 
-// Add event listeners to checkboxes
-document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.report-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateBulkActions);
-    });
-});
+		checkboxes.forEach((checkbox) => {
+			checkbox.checked = selectAll.checked;
+		});
 
-function deleteReport(assessmentId) {
-    if (confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
-        fetch(`/api/assessments/${assessmentId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Failed to delete report: ' + data.error);
-            }
-        })
-        .catch(error => {
-            alert('Error deleting report: ' + error);
-        });
-    }
-}
+		updateBulkActions();
+	}
 
-function bulkDownload(format) {
-    const selected = Array.from(document.querySelectorAll('.report-checkbox:checked'))
-                          .map(cb => cb.value);
-    
-    if (selected.length === 0) {
-        alert('Please select at least one report.');
-        return;
-    }
-    
-    // Create form and submit for bulk download
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `/api/reports/bulk-download?format=${format}`;
-    
-    selected.forEach(id => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'assessment_ids';
-        input.value = id;
-        form.appendChild(input);
-    });
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-}
+	function updateBulkActions() {
+		const checkboxes = document.querySelectorAll(".report-checkbox:checked");
+		const bulkActions = document.getElementById("bulkActions");
+		const selectedCount = document.getElementById("selectedCount");
 
-function bulkDelete() {
-    const selected = Array.from(document.querySelectorAll('.report-checkbox:checked'))
-                          .map(cb => cb.value);
-    
-    if (selected.length === 0) {
-        alert('Please select at least one report.');
-        return;
-    }
-    
-    if (confirm(`Are you sure you want to delete ${selected.length} reports? This action cannot be undone.`)) {
-        fetch('/api/assessments/bulk-delete', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({assessment_ids: selected})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Failed to delete reports: ' + data.error);
-            }
-        })
-        .catch(error => {
-            alert('Error deleting reports: ' + error);
-        });
-    }
-}
+		selectedCount.textContent = checkboxes.length;
+		bulkActions.style.display = checkboxes.length > 0 ? "block" : "none";
+	}
 
-function exportAllReports() {
-    window.location.href = '/api/reports/export-all';
-}
+	// Add event listeners to checkboxes
+	document.addEventListener("DOMContentLoaded", function () {
+		const checkboxes = document.querySelectorAll(".report-checkbox");
+		checkboxes.forEach((checkbox) => {
+			checkbox.addEventListener("change", updateBulkActions);
+		});
+	});
+
+	function deleteReport(assessmentId) {
+		if (
+			confirm(
+				"Are you sure you want to delete this report? This action cannot be undone."
+			)
+		) {
+			fetch(`/api/assessments/${assessmentId}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.success) {
+						location.reload();
+					} else {
+						alert("Failed to delete report: " + data.error);
+					}
+				})
+				.catch((error) => {
+					alert("Error deleting report: " + error);
+				});
+		}
+	}
+
+	function bulkDownload(format) {
+		const selected = Array.from(
+			document.querySelectorAll(".report-checkbox:checked")
+		).map((cb) => cb.value);
+
+		if (selected.length === 0) {
+			alert("Please select at least one report.");
+			return;
+		}
+
+		// Create form and submit for bulk download
+		const form = document.createElement("form");
+		form.method = "POST";
+		form.action = `/api/reports/bulk-download?format=${format}`;
+
+		selected.forEach((id) => {
+			const input = document.createElement("input");
+			input.type = "hidden";
+			input.name = "assessment_ids";
+			input.value = id;
+			form.appendChild(input);
+		});
+
+		document.body.appendChild(form);
+		form.submit();
+		document.body.removeChild(form);
+	}
+
+	function bulkDelete() {
+		const selected = Array.from(
+			document.querySelectorAll(".report-checkbox:checked")
+		).map((cb) => cb.value);
+
+		if (selected.length === 0) {
+			alert("Please select at least one report.");
+			return;
+		}
+
+		if (
+			confirm(
+				`Are you sure you want to delete ${selected.length} reports? This action cannot be undone.`
+			)
+		) {
+			fetch("/api/assessments/bulk-delete", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ assessment_ids: selected }),
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.success) {
+						location.reload();
+					} else {
+						alert("Failed to delete reports: " + data.error);
+					}
+				})
+				.catch((error) => {
+					alert("Error deleting reports: " + error);
+				});
+		}
+	}
+
+	function exportAllReports() {
+		window.location.href = "/api/reports/export-all";
+	}
 </script>
 
 <style>
-.table th {
-    border: none;
-    font-weight: 600;
-}
+	.table th {
+		border: none;
+		font-weight: 600;
+	}
 
-.table td {
-    vertical-align: middle;
-    border-color: rgba(0,0,0,0.1);
-}
+	.table td {
+		vertical-align: middle;
+		border-color: rgba(0, 0, 0, 0.1);
+	}
 
-.btn-group .btn {
-    border-radius: 0.25rem;
-    margin-right: 2px;
-}
+	.btn-group .btn {
+		border-radius: 0.25rem;
+		margin-right: 2px;
+	}
 
-.badge {
-    font-size: 0.7em;
-}
+	.badge {
+		font-size: 0.7em;
+	}
 </style>
 {% endblock %}
