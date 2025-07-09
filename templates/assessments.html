@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Assessments - Cybersecurity Automation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-list"></i> Security Assessments</h2>
+                <a href="{{ url_for('new_assessment') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Assessment
+                </a>
+            </div>
+
+            {% if assessments %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Assessment History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Target</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Started</th>
+                                    <th>Duration</th>
+                                    <th>Findings</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assessment in assessments %}
+                                <tr>
+                                    <td>
+                                        <code>{{ assessment.target }}</code>
+                                    </td>
+                                    <td>
+                                        {% if assessment.target_type == 'domain' %}
+                                            <span class="badge bg-info">Domain</span>
+                                        {% elif assessment.target_type == 'ip' %}
+                                            <span class="badge bg-secondary">IP Address</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">{{ assessment.target_type }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if assessment.status == 'completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif assessment.status == 'running' %}
+                                            <span class="badge bg-primary">Running</span>
+                                        {% elif assessment.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">{{ assessment.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ assessment.created_at.strftime('%Y-%m-%d %H:%M') if assessment.created_at else 'N/A' }}</td>
+                                    <td>
+                                        {% if assessment.completed_at and assessment.created_at %}
+                                            {{ (assessment.completed_at - assessment.created_at).total_seconds() // 60 }} min
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if assessment.scan_results %}
+                                            <span class="badge bg-info">{{ assessment.scan_results|length }}</span>
+                                        {% else %}
+                                            <span class="text-muted">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('assessment_detail', assessment_id=assessment.id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            {% if assessment.status == 'completed' %}
+                                            <a href="{{ url_for('download_report', assessment_id=assessment.id, format='pdf') }}" 
+                                               class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-download"></i> Report
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-list-alt fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Assessments Found</h4>
+                    <p class="text-muted mb-4">Start your first security assessment to see results here.</p>
+                    <a href="{{ url_for('new_assessment') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create New Assessment
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    border: none;
+    font-weight: 600;
+}
+
+.table td {
+    vertical-align: middle;
+    border-color: rgba(0,0,0,0.1);
+}
+
+.btn-group .btn {
+    border-radius: 0.25rem;
+    margin-right: 2px;
+}
+</style>
+{% endblock %}

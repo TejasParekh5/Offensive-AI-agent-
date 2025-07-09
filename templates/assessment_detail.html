@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Details - Cybersecurity Automation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-shield-alt"></i> Assessment Details</h2>
+                    <p class="text-muted mb-0">Target: <code>{{ assessment_data.target }}</code></p>
+                </div>
+                <div>
+                    <a href="{{ url_for('assessments') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Assessments
+                    </a>
+                    {% if assessment_data.status == 'completed' %}
+                    <div class="dropdown d-inline-block ms-2">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-download"></i> Download Report
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('download_report', assessment_id=assessment_data.id, format='pdf') }}">
+                                <i class="fas fa-file-pdf"></i> PDF Report</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('download_report', assessment_id=assessment_data.id, format='json') }}">
+                                <i class="fas fa-file-code"></i> JSON Export</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('download_report', assessment_id=assessment_data.id, format='csv') }}">
+                                <i class="fas fa-file-csv"></i> CSV Export</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Status and Progress -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-info-circle"></i> Assessment Status</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Status:</strong><br>
+                                    {% if assessment_data.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% elif assessment_data.status == 'running' %}
+                                        <span class="badge bg-primary">Running</span>
+                                    {% elif assessment_data.status == 'failed' %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ assessment_data.status|title }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Target Type:</strong><br>
+                                    {% if assessment_data.target_type == 'domain' %}
+                                        <span class="badge bg-info">Domain</span>
+                                    {% elif assessment_data.target_type == 'ip' %}
+                                        <span class="badge bg-secondary">IP Address</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ assessment_data.target_type }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Started:</strong><br>
+                                    <small>{{ assessment_data.created_at.strftime('%Y-%m-%d %H:%M:%S') if assessment_data.created_at else 'N/A' }}</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Duration:</strong><br>
+                                    <small>
+                                        {% if assessment_data.completed_at and assessment_data.created_at %}
+                                            {{ (assessment_data.completed_at - assessment_data.created_at).total_seconds() // 60 }} minutes
+                                        {% else %}
+                                            In progress...
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-chart-line"></i> Progress</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if status and status.get('progress') is not none %}
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ status.get('current_phase', 'Processing') }}</span>
+                                    <span>{{ status.get('progress', 0) }}%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ status.get('progress', 0) }}%"
+                                         aria-valuenow="{{ status.get('progress', 0) }}" 
+                                         aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if assessment_data.status == 'running' %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-spinner fa-spin"></i> Assessment is currently running...
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Tabs -->
+            {% if assessment_data.status == 'completed' %}
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="resultsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#summary" type="button" role="tab">
+                                <i class="fas fa-chart-pie"></i> Summary
+                            </button>
+                        </li>
+                        {% if assessment_data.recon_results %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="recon-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#recon" type="button" role="tab">
+                                <i class="fas fa-search"></i> Reconnaissance
+                            </button>
+                        </li>
+                        {% endif %}
+                        {% if assessment_data.scan_results %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="scanning-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#scanning" type="button" role="tab">
+                                <i class="fas fa-crosshairs"></i> Port Scanning
+                            </button>
+                        </li>
+                        {% endif %}
+                        {% if assessment_data.test_results %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="testing-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#testing" type="button" role="tab">
+                                <i class="fas fa-bug"></i> Vulnerability Testing
+                            </button>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="resultsTabContent">
+                        <!-- Summary Tab -->
+                        <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">Open Ports</h5>
+                                            <h2 class="text-primary">
+                                                {{ assessment_data.scan_results|length if assessment_data.scan_results else 0 }}
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">Vulnerabilities</h5>
+                                            <h2 class="text-warning">
+                                                {{ assessment_data.test_results|length if assessment_data.test_results else 0 }}
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">Risk Score</h5>
+                                            <h2 class="text-danger">
+                                                {% if assessment_data.test_results %}
+                                                    {{ (assessment_data.test_results|selectattr('severity', 'equalto', 'high')|list|length * 3 + 
+                                                         assessment_data.test_results|selectattr('severity', 'equalto', 'medium')|list|length * 2 + 
+                                                         assessment_data.test_results|selectattr('severity', 'equalto', 'low')|list|length) }}
+                                                {% else %}
+                                                    0
+                                                {% endif %}
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reconnaissance Tab -->
+                        {% if assessment_data.recon_results %}
+                        <div class="tab-pane fade" id="recon" role="tabpanel">
+                            <h5><i class="fas fa-search"></i> Reconnaissance Results</h5>
+                            {% for result in assessment_data.recon_results %}
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <strong>{{ result.tool or 'Unknown Tool' }}</strong>
+                                    <span class="badge bg-secondary float-end">{{ result.timestamp.strftime('%H:%M:%S') if result.timestamp else 'N/A' }}</span>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="bg-light p-3 rounded"><code>{{ result.output or 'No output' }}</code></pre>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Scanning Tab -->
+                        {% if assessment_data.scan_results %}
+                        <div class="tab-pane fade" id="scanning" role="tabpanel">
+                            <h5><i class="fas fa-crosshairs"></i> Port Scanning Results</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Port</th>
+                                            <th>Service</th>
+                                            <th>Version</th>
+                                            <th>State</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for result in assessment_data.scan_results %}
+                                        <tr>
+                                            <td><code>{{ result.port }}/{{ result.protocol or 'tcp' }}</code></td>
+                                            <td>{{ result.service or 'Unknown' }}</td>
+                                            <td>{{ result.version or 'N/A' }}</td>
+                                            <td>
+                                                {% if result.state == 'open' %}
+                                                    <span class="badge bg-success">Open</span>
+                                                {% elif result.state == 'closed' %}
+                                                    <span class="badge bg-danger">Closed</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">{{ result.state or 'Unknown' }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Testing Tab -->
+                        {% if assessment_data.test_results %}
+                        <div class="tab-pane fade" id="testing" role="tabpanel">
+                            <h5><i class="fas fa-bug"></i> Vulnerability Testing Results</h5>
+                            {% for result in assessment_data.test_results %}
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <strong>{{ result.test_name or 'Unknown Test' }}</strong>
+                                    {% if result.severity == 'high' %}
+                                        <span class="badge bg-danger">High</span>
+                                    {% elif result.severity == 'medium' %}
+                                        <span class="badge bg-warning">Medium</span>
+                                    {% elif result.severity == 'low' %}
+                                        <span class="badge bg-info">Low</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ result.severity or 'Unknown' }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    {% if result.description %}
+                                    <p><strong>Description:</strong> {{ result.description }}</p>
+                                    {% endif %}
+                                    {% if result.output %}
+                                    <p><strong>Output:</strong></p>
+                                    <pre class="bg-light p-3 rounded"><code>{{ result.output }}</code></pre>
+                                    {% endif %}
+                                    {% if result.recommendation %}
+                                    <p><strong>Recommendation:</strong> {{ result.recommendation }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Assessment not completed -->
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Assessment In Progress</h4>
+                    <p class="text-muted">Results will be displayed here once the assessment is completed.</p>
+                    {% if assessment_data.status == 'running' %}
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Auto-refresh for running assessments -->
+{% if assessment_data.status == 'running' %}
+<script>
+setTimeout(function() {
+    location.reload();
+}, 10000); // Refresh every 10 seconds
+</script>
+{% endif %}
+{% endblock %}

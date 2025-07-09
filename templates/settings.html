@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Cybersecurity Automation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-cog"></i> System Settings</h2>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <form method="POST" action="{{ url_for('settings') }}">
+                <!-- LLM Configuration -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-brain"></i> LLM Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ollama_url" class="form-label">Ollama URL</label>
+                                    <input type="url" class="form-control" id="ollama_url" name="ollama_url" 
+                                           value="{{ settings.ollama_url or 'http://localhost:11434' }}"
+                                           placeholder="http://localhost:11434">
+                                    <div class="form-text">URL of your local Ollama instance</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ollama_model" class="form-label">Default Model</label>
+                                    <input type="text" class="form-control" id="ollama_model" name="ollama_model"
+                                           value="{{ settings.ollama_model or 'llama2' }}"
+                                           placeholder="llama2">
+                                    <div class="form-text">Default LLaMA model for test generation</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enable_ai_tests" name="enable_ai_tests"
+                                       {{ 'checked' if settings.enable_ai_tests else '' }}>
+                                <label class="form-check-label" for="enable_ai_tests">
+                                    Enable AI-generated test cases
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="require_approval" name="require_approval"
+                                       {{ 'checked' if settings.require_approval else '' }}>
+                                <label class="form-check-label" for="require_approval">
+                                    Require approval for AI-generated tests
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scanning Configuration -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-crosshairs"></i> Scanning Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="default_ports" class="form-label">Default Port Range</label>
+                                    <select class="form-select" id="default_ports" name="default_ports">
+                                        <option value="top_100" {{ 'selected' if settings.default_ports == 'top_100' else '' }}>Top 100 ports</option>
+                                        <option value="top_1000" {{ 'selected' if settings.default_ports == 'top_1000' else '' }}>Top 1000 ports</option>
+                                        <option value="all" {{ 'selected' if settings.default_ports == 'all' else '' }}>All ports (1-65535)</option>
+                                        <option value="custom" {{ 'selected' if settings.default_ports == 'custom' else '' }}>Custom range</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="scan_timeout" class="form-label">Scan Timeout (seconds)</label>
+                                    <input type="number" class="form-control" id="scan_timeout" name="scan_timeout"
+                                           value="{{ settings.scan_timeout or 300 }}" min="30" max="3600">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="preferred_scanner" class="form-label">Preferred Scanner</label>
+                                    <select class="form-select" id="preferred_scanner" name="preferred_scanner">
+                                        <option value="nmap" {{ 'selected' if settings.preferred_scanner == 'nmap' else '' }}>Nmap</option>
+                                        <option value="masscan" {{ 'selected' if settings.preferred_scanner == 'masscan' else '' }}>Masscan</option>
+                                        <option value="rustscan" {{ 'selected' if settings.preferred_scanner == 'rustscan' else '' }}>RustScan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="scan_intensity" class="form-label">Scan Intensity</label>
+                                    <select class="form-select" id="scan_intensity" name="scan_intensity">
+                                        <option value="stealth" {{ 'selected' if settings.scan_intensity == 'stealth' else '' }}>Stealth</option>
+                                        <option value="normal" {{ 'selected' if settings.scan_intensity == 'normal' else '' }}>Normal</option>
+                                        <option value="aggressive" {{ 'selected' if settings.scan_intensity == 'aggressive' else '' }}>Aggressive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Keys and External Services -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-key"></i> API Keys & External Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="shodan_api_key" class="form-label">Shodan API Key</label>
+                            <input type="password" class="form-control" id="shodan_api_key" name="shodan_api_key"
+                                   value="{{ settings.shodan_api_key or '' }}"
+                                   placeholder="Enter your Shodan API key">
+                            <div class="form-text">Required for Shodan reconnaissance queries</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enable_shodan" name="enable_shodan"
+                                       {{ 'checked' if settings.enable_shodan else '' }}>
+                                <label class="form-check-label" for="enable_shodan">
+                                    Enable Shodan integration
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Configuration -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-file-alt"></i> Report Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="default_report_format" class="form-label">Default Report Format</label>
+                                    <select class="form-select" id="default_report_format" name="default_report_format">
+                                        <option value="pdf" {{ 'selected' if settings.default_report_format == 'pdf' else '' }}>PDF</option>
+                                        <option value="json" {{ 'selected' if settings.default_report_format == 'json' else '' }}>JSON</option>
+                                        <option value="csv" {{ 'selected' if settings.default_report_format == 'csv' else '' }}>CSV</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="retention_days" class="form-label">Data Retention (days)</label>
+                                    <input type="number" class="form-control" id="retention_days" name="retention_days"
+                                           value="{{ settings.retention_days or 30 }}" min="1" max="365">
+                                    <div class="form-text">How long to keep assessment data</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="include_raw_output" name="include_raw_output"
+                                       {{ 'checked' if settings.include_raw_output else '' }}>
+                                <label class="form-check-label" for="include_raw_output">
+                                    Include raw tool output in reports
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Configuration -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-server"></i> System Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="max_concurrent_assessments" class="form-label">Max Concurrent Assessments</label>
+                                    <input type="number" class="form-control" id="max_concurrent_assessments" 
+                                           name="max_concurrent_assessments"
+                                           value="{{ settings.max_concurrent_assessments or 3 }}" min="1" max="10">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="log_level" class="form-label">Log Level</label>
+                                    <select class="form-select" id="log_level" name="log_level">
+                                        <option value="DEBUG" {{ 'selected' if settings.log_level == 'DEBUG' else '' }}>Debug</option>
+                                        <option value="INFO" {{ 'selected' if settings.log_level == 'INFO' else '' }}>Info</option>
+                                        <option value="WARNING" {{ 'selected' if settings.log_level == 'WARNING' else '' }}>Warning</option>
+                                        <option value="ERROR" {{ 'selected' if settings.log_level == 'ERROR' else '' }}>Error</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto_cleanup" name="auto_cleanup"
+                                       {{ 'checked' if settings.auto_cleanup else '' }}>
+                                <label class="form-check-label" for="auto_cleanup">
+                                    Enable automatic cleanup of old data
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-warning" onclick="testConfiguration()">
+                            <i class="fas fa-vial"></i> Test Configuration
+                        </button>
+                        <button type="button" class="btn btn-info ms-2" onclick="exportSettings()">
+                            <i class="fas fa-download"></i> Export Settings
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Status Modal -->
+<div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configuration Test</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="statusModalBody">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Testing...</span>
+                    </div>
+                    <p class="mt-2">Testing configuration...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    if (confirm('Are you sure you want to reset all settings to defaults?')) {
+        document.querySelector('form').reset();
+    }
+}
+
+function testConfiguration() {
+    const modal = new bootstrap.Modal(document.getElementById('statusModal'));
+    modal.show();
+    
+    fetch('/api/settings/test', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const modalBody = document.getElementById('statusModalBody');
+        if (data.success) {
+            modalBody.innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check-circle"></i> Configuration Test Successful</h6>
+                    <ul class="mb-0">
+                        ${data.results.map(result => 
+                            `<li><strong>${result.component}:</strong> ${result.status}</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+        } else {
+            modalBody.innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-exclamation-triangle"></i> Configuration Test Failed</h6>
+                    <p class="mb-0">${data.error}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        const modalBody = document.getElementById('statusModalBody');
+        modalBody.innerHTML = `
+            <div class="alert alert-danger">
+                <h6><i class="fas fa-exclamation-triangle"></i> Test Error</h6>
+                <p class="mb-0">${error}</p>
+            </div>
+        `;
+    });
+}
+
+function exportSettings() {
+    window.location.href = '/api/settings/export';
+}
+
+// Auto-save draft functionality
+let autoSaveTimeout;
+document.querySelectorAll('input, select, textarea').forEach(element => {
+    element.addEventListener('change', function() {
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(() => {
+            // Could implement auto-save to localStorage here
+            console.log('Settings changed - auto-save triggered');
+        }, 2000);
+    });
+});
+</script>
+
+<style>
+.card-header h5 {
+    margin-bottom: 0;
+}
+
+.form-check {
+    margin-bottom: 0.5rem;
+}
+
+.form-text {
+    font-size: 0.8rem;
+}
+</style>
+{% endblock %}
